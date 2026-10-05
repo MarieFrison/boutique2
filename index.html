@@ -1,0 +1,1654 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le Comptoir des Lutins</title>
+<meta name="description" content="Scénario 4 – 1CAP EPC – Une réserve bien organisée : le rush de Noël au Comptoir des Lutins.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#0d2433; --night2:#143347; --pine:#17573a; --pine2:#1f7a4f; --pine-soft:#e3f1e8;
+  --red:#b3202a; --red-soft:#fbe7e6; --gold:#c99a1c; --gold-soft:#fbf1d4;
+  --cream:#f8f3e8; --paper:#fffdf8; --ink:#1c2a30; --muted:#5b6a70; --line:#e4dccb;
+  --ok:#1f7a4f; --ko:#b3202a; --info:#2a5d8a; --info-soft:#e6eff7;
+  --radius:14px; --shadow:0 2px 0 rgba(13,36,51,.06),0 10px 28px rgba(13,36,51,.10);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--cream);color:var(--ink);font:17px/1.55 "Nunito",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:"Fraunces",Georgia,serif;line-height:1.15;margin:0 0 .5em;color:var(--night)}
+h1{font-size:clamp(2rem,5vw,3.3rem);font-weight:800}
+h2{font-size:clamp(1.5rem,3.2vw,2.1rem)}
+h3{font-size:1.2rem}
+p{margin:.4em 0 .8em}
+button{font:inherit;cursor:pointer}
+#snow{position:fixed;inset:0;pointer-events:none;z-index:0}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px;position:relative;z-index:1}
+
+/* ---------- Top bar ---------- */
+.topbar{position:sticky;top:0;z-index:20;background:var(--night);color:#fff;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.topbar .bar1{display:flex;align-items:center;gap:12px;min-height:54px}
+.topbar .bar1 .audio-ctl{margin-left:auto}
+.topbar .bar2{border-top:1px solid rgba(255,255,255,.08);padding-top:6px;padding-bottom:6px}
+.brand{display:flex;align-items:center;gap:10px;font-family:"Fraunces",serif;font-weight:800;font-size:1.1rem;white-space:nowrap;background:none;border:0;color:#fff;padding:0}
+.brand svg{flex:none}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{background:transparent;border:0;color:#d6e2ea;padding:8px 12px;border-radius:999px;font-weight:700;font-size:.93rem;white-space:nowrap}
+nav.tabs button:hover{background:rgba(255,255,255,.08);color:#fff}
+nav.tabs button.on{background:var(--gold);color:var(--night)}
+.code-pill{display:flex;gap:3px;flex:none}
+.code-pill span{width:20px;height:26px;border-radius:5px;background:rgba(255,255,255,.1);display:grid;place-items:center;font-weight:800;font-size:.85rem;color:#fff}
+.code-pill span.got{background:var(--red)}
+@media (max-width:560px){.code-pill{display:none}}
+@media (max-width:380px){.brand .bt{display:none}}
+
+/* ---------- Views ---------- */
+.view{display:none;padding:28px 0 60px;animation:fade .35s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- Hero ---------- */
+.hero{background:radial-gradient(120% 140% at 80% 0%,#1d4a63 0%,var(--night) 55%);color:#eaf2f6;border-radius:24px;padding:34px 30px;display:grid;grid-template-columns:1.25fr .9fr;gap:24px;align-items:center;box-shadow:var(--shadow);overflow:hidden;position:relative}
+.hero h1{color:#fff}
+.hero .kicker{display:inline-block;background:rgba(201,154,28,.18);color:#f3d27a;border:1px solid rgba(201,154,28,.45);padding:4px 12px;border-radius:999px;font-weight:800;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:14px}
+.hero p{color:#cfdde5;font-size:1.05rem}
+.hero .lead{font-size:1.15rem;color:#fff}
+.hero-art{width:100%;max-width:360px;justify-self:center}
+@media (max-width:820px){.hero{grid-template-columns:1fr;padding:26px 20px}.hero-art{max-width:240px;order:-1}}
+
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:12px;padding:12px 20px;font-weight:800;font-size:1rem;transition:transform .12s,box-shadow .12s;text-decoration:none}
+.btn:active{transform:translateY(1px)}
+.btn-red{background:var(--red);color:#fff;box-shadow:0 4px 0 #7d151c}
+.btn-red:hover{background:#c52834}
+.btn-gold{background:var(--gold);color:var(--night);box-shadow:0 4px 0 #8c6a10}
+.btn-ghost{background:transparent;color:inherit;border:2px solid currentColor}
+.btn-green{background:var(--pine2);color:#fff;box-shadow:0 4px 0 #0f4a2f}
+.btn-sm{padding:7px 12px;font-size:.88rem;border-radius:9px}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width:820px){.grid2,.grid3{grid-template-columns:1fr}}
+.section{margin-top:26px}
+
+.idcard label{display:block;font-weight:800;margin:6px 0 4px}
+input[type=text],input[type=number],input[type=password],textarea,select{font:inherit;border:2px solid var(--line);border-radius:10px;padding:9px 11px;background:#fff;color:var(--ink);width:100%}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--info);box-shadow:0 0 0 3px rgba(42,93,138,.18)}
+
+.how li{margin:.35em 0}
+.lvl-legend{display:grid;gap:10px}
+.lvl-legend div{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:var(--cream)}
+.lvl-legend b{white-space:nowrap}
+
+/* SGF pastilles */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:800;padding:4px 10px;border-radius:999px;background:var(--cream);border:1px solid var(--line);color:var(--night)}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none}
+.d-vert{background:#2e9e5b}.d-jaune{background:#e6b800}.d-orange{background:#e67e22}.d-bleu{background:#2f6fd1}.d-rouge{background:#c0392b}
+
+/* ---------- Advent calendar ---------- */
+.advent{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:20px}
+@media (max-width:820px){.advent{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:480px){.advent{grid-template-columns:1fr}}
+.door{position:relative;border:0;text-align:left;padding:0;border-radius:18px;background:var(--pine);color:#fff;min-height:220px;box-shadow:var(--shadow);overflow:hidden;perspective:900px}
+.door:nth-child(2n){background:var(--red)}
+.door:nth-child(3n){background:var(--night2)}
+.door .face{position:absolute;inset:0;padding:18px;display:flex;flex-direction:column;justify-content:space-between;background-image:radial-gradient(rgba(255,255,255,.12) 1.2px,transparent 1.4px);background-size:16px 16px}
+.door .num{font-family:"Fraunces",serif;font-size:3.6rem;font-weight:800;line-height:.9;color:#fff}
+.door .num small{display:block;font-size:.9rem;font-family:"Nunito",system-ui,sans-serif;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.85;margin-top:4px}
+.door .ttl{font-weight:800;font-size:1.06rem}
+.door .comp{font-size:.8rem;opacity:.9;margin-top:4px}
+.door .ribbon{position:absolute;top:0;right:22px;width:14px;height:100%;background:rgba(201,154,28,.85)}
+.door .bow{position:absolute;top:10px;right:6px;font-size:1.6rem}
+.door:hover{transform:translateY(-3px)}
+.door{transition:transform .15s}
+.door.done .face{background:var(--paper);color:var(--ink);background-image:none;border:3px dashed var(--gold);border-radius:18px}
+.door.done .num{color:var(--red)}
+.door.done .ribbon,.door.done .bow{display:none}
+.door .digit{font-family:"Fraunces",serif;font-size:3rem;font-weight:800;color:var(--night);background:var(--gold-soft);border-radius:12px;width:64px;height:72px;display:grid;place-items:center;border:2px solid var(--gold)}
+.stars{color:var(--gold);font-size:1.05rem;letter-spacing:2px}
+
+/* ---------- Mission view ---------- */
+.m-head{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+.m-date{background:var(--red);color:#fff;border-radius:14px;padding:10px 14px;text-align:center;font-weight:800;min-width:84px;box-shadow:0 4px 0 #7d151c}
+.m-date b{display:block;font-family:"Fraunces",serif;font-size:2.2rem;line-height:1}
+.speech{display:flex;gap:14px;align-items:flex-start;margin:18px 0}
+.avatar{flex:none;width:58px;height:58px;border-radius:50%;background:var(--gold-soft);display:grid;place-items:center;border:2px solid var(--gold)}
+.bubble{background:var(--paper);border:1px solid var(--line);border-radius:4px 16px 16px 16px;padding:14px 18px;box-shadow:var(--shadow);flex:1}
+.bubble .who{font-weight:800;color:var(--red);font-size:.9rem;margin-bottom:2px}
+.farf{background:var(--night);color:#f1e6c8;border-radius:14px;padding:12px 16px;display:flex;gap:10px;align-items:center;font-size:.96rem;margin:12px 0}
+.levelpick{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:14px 0 6px}
+@media (max-width:760px){.levelpick{grid-template-columns:1fr}}
+.lvl{border:3px solid var(--line);background:var(--paper);border-radius:16px;padding:16px;text-align:left;transition:border-color .15s,transform .15s}
+.lvl:hover{border-color:var(--gold);transform:translateY(-2px)}
+.lvl .ic{font-size:1.9rem}
+.lvl b{display:block;font-family:"Fraunces",serif;font-size:1.25rem;color:var(--night)}
+.lvl.on{border-color:var(--red);background:#fff}
+.lvl small{color:var(--muted);display:block;margin-top:4px}
+
+.block{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin:16px 0;box-shadow:var(--shadow)}
+.block.doc{background:#fff;border-left:6px solid var(--info)}
+.block.rules{background:var(--pine-soft);border-left:6px solid var(--pine2)}
+.bhead{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
+.bnum{flex:none;width:32px;height:32px;border-radius:50%;background:var(--night);color:#fff;display:grid;place-items:center;font-weight:800}
+.bq{font-weight:800;font-size:1.04rem;padding-top:3px}
+.doc-title{font-weight:800;color:var(--info);text-transform:uppercase;letter-spacing:.04em;font-size:.82rem;margin-bottom:6px}
+.hintbtn{background:var(--gold-soft);border:1px dashed var(--gold);color:#6b5208;border-radius:9px;padding:6px 12px;font-weight:800;font-size:.88rem;margin-top:10px}
+.hint{display:none;background:var(--gold-soft);border-radius:10px;padding:12px 14px;margin-top:10px;font-size:.96rem}
+.hint.open{display:block}
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:10px;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;min-width:560px;background:#fff;font-size:.95rem}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{background:var(--night);color:#fff;font-weight:800;font-size:.85rem}
+tr:nth-child(even) td{background:#fbf9f3}
+td select,td input{min-width:120px;padding:6px 8px}
+td.ok select,td.ok input{border-color:var(--ok);background:#effaf3}
+td.ko select,td.ko input{border-color:var(--ko);background:#fff1f0}
+td.prefill select,td.prefill input{background:#eef2f4;border-style:dashed}
+.opts{display:grid;gap:8px}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:2px solid var(--line);border-radius:10px;background:#fff;cursor:pointer}
+.opt input{margin-top:5px;accent-color:var(--red);width:18px;height:18px;flex:none}
+.opt.ok{border-color:var(--ok);background:#effaf3}
+.opt.ko{border-color:var(--ko);background:#fff1f0}
+.order{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.order li{display:flex;align-items:center;gap:10px;padding:9px 10px;border:2px solid var(--line);border-radius:10px;background:#fff}
+.order li .pos{flex:none;width:28px;height:28px;border-radius:8px;background:var(--cream);display:grid;place-items:center;font-weight:800}
+.order li .tx{flex:1}
+.order li button{border:1px solid var(--line);background:var(--cream);border-radius:8px;width:34px;height:32px;font-weight:800}
+.order li.ok{border-color:var(--ok);background:#effaf3}
+.order li.ko{border-color:var(--ko);background:#fff1f0}
+.numrow{display:flex;gap:8px;align-items:center;max-width:280px}
+.numrow.ok input{border-color:var(--ok);background:#effaf3}
+.numrow.ko input{border-color:var(--ko);background:#fff1f0}
+.fb{margin-top:10px;font-weight:700;font-size:.95rem;display:none;padding:8px 12px;border-radius:9px}
+.fb.show{display:block}
+.fb.good{background:#effaf3;color:var(--ok)}
+.fb.bad{background:#fff1f0;color:var(--ko)}
+.fb.neutral{background:var(--info-soft);color:var(--info)}
+.validate-bar{position:relative;margin-top:20px;background:var(--night);color:#fff;border-radius:16px;padding:14px 16px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.result{margin-top:18px}
+.win{background:linear-gradient(135deg,var(--pine) 0%,var(--pine2) 100%);color:#fff;border-radius:20px;padding:26px;display:flex;gap:22px;align-items:center;flex-wrap:wrap;box-shadow:var(--shadow)}
+.win h3{color:#fff;font-size:1.5rem}
+.win .digit{background:#fff;color:var(--red);font-family:"Fraunces",serif;font-weight:800;font-size:3.6rem;width:92px;height:104px;border-radius:16px;display:grid;place-items:center;border:4px solid var(--gold);animation:pop .6s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.2) rotate(-20deg);opacity:0}to{transform:none;opacity:1}}
+.lose{background:var(--red-soft);border:2px solid var(--red);border-radius:16px;padding:16px 18px;color:#7d151c}
+.backlink{background:none;border:0;color:var(--info);font-weight:800;padding:0;margin-bottom:14px}
+
+/* SVG docs */
+.svgdoc{width:100%;height:auto;max-width:720px;display:block;margin:6px auto}
+
+/* ---------- Carnet ---------- */
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-top:16px}
+.vcard{perspective:900px}
+.flip{position:relative;height:190px;transition:transform .5s;transform-style:preserve-3d;cursor:pointer;border:0;width:100%;background:none;padding:0}
+.flip.on{transform:rotateY(180deg)}
+.flip .f,.flip .b{position:absolute;inset:0;border-radius:14px;backface-visibility:hidden;-webkit-backface-visibility:hidden;padding:16px;display:flex;flex-direction:column;justify-content:center;text-align:left;box-shadow:var(--shadow)}
+.flip .f{background:var(--night);color:#fff}
+.flip .f b{font-family:"Fraunces",serif;font-size:1.35rem}
+.flip .f small{color:#f3d27a;font-weight:800;margin-top:8px}
+.flip .b{background:#fff;border:2px solid var(--gold);transform:rotateY(180deg);font-size:.92rem;justify-content:flex-start;overflow:auto}
+.flip .b em{color:var(--pine);font-style:normal;font-weight:700;display:block;margin-top:6px}
+.vcheck{display:flex;gap:8px;align-items:center;margin-top:8px;font-weight:700;font-size:.92rem}
+.vcheck input{width:18px;height:18px;accent-color:var(--pine2)}
+.progress{height:12px;background:var(--line);border-radius:999px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--pine2);width:0;transition:width .3s}
+
+/* ---------- Time's up ---------- */
+.tu{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
+@media (max-width:820px){.tu{grid-template-columns:1fr}}
+.tu-card{background:var(--night);color:#fff;border-radius:20px;padding:28px;min-height:280px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.tu-word{font-family:"Fraunces",serif;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;color:#fff}
+.tu-forb{margin-top:14px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.tu-forb span{background:var(--red);padding:4px 10px;border-radius:999px;font-weight:800;font-size:.86rem}
+.timer{font-family:"Fraunces",serif;font-size:3rem;font-weight:800;color:var(--night)}
+.timer.low{color:var(--red)}
+
+/* ---------- Coffre ---------- */
+.safe{background:radial-gradient(120% 120% at 50% 0%,#244e66,var(--night));color:#fff;border-radius:24px;padding:30px 20px;text-align:center;box-shadow:var(--shadow)}
+.safe h2{color:#fff}
+.slots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:18px 0}
+.slots input{width:56px;height:70px;text-align:center;font-family:"Fraunces",serif;font-size:2.2rem;font-weight:800;border-radius:12px;border:3px solid var(--gold);background:#fff;color:var(--night);padding:0}
+.slots .sep{font-size:2rem;align-self:center;color:var(--gold)}
+@media (max-width:480px){.slots{gap:6px;flex-wrap:nowrap}.slots input{width:40px;height:56px;font-size:1.7rem}.slots .sep{font-size:1.4rem}}
+.collected{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.collected span{background:rgba(255,255,255,.1);border-radius:10px;padding:6px 10px;font-weight:800}
+.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-4px)}}
+
+/* ---------- Bilan / Diplôme ---------- */
+.selfeval td{vertical-align:top}
+.selfeval label{display:flex;gap:6px;align-items:center;white-space:nowrap;font-size:.9rem}
+.diploma{background:#fff;border:10px double var(--gold);border-radius:12px;padding:30px;text-align:center}
+.diploma h2{color:var(--red)}
+
+/* ---------- Prof ---------- */
+.prof h3{margin-top:18px}
+details{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:10px 0}
+summary{font-weight:800;cursor:pointer}
+.corr li{margin:.2em 0}
+
+/* ---------- Corrections v4 ---------- */
+.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.simple{display:flex;gap:10px;align-items:flex-start;background:#eef7ee;border:2px dashed var(--pine2);border-radius:12px;padding:10px 14px;font-size:1.05rem;margin:4px 0 12px}
+.simple b{color:var(--pine);white-space:nowrap}
+.terrain{background:#fff;border:3px solid var(--gold);border-radius:18px;padding:20px;margin-top:26px;box-shadow:var(--shadow)}
+.terrain h3{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.terrain .mode{background:var(--gold-soft);border:1px solid var(--gold);color:#6b5208;border-radius:999px;padding:3px 10px;font-size:.82rem;font-family:"Nunito",sans-serif}
+.terrain ul{list-style:none;padding:0;margin:10px 0;display:grid;gap:6px}
+.terrain li label{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:10px;background:var(--cream)}
+.terrain li input{width:18px;height:18px;margin-top:4px;accent-color:var(--pine2);flex:none}
+.terrain .ok-badge{background:var(--pine-soft);color:var(--pine);border-radius:10px;padding:10px 14px;font-weight:800}
+.badge-on{display:flex;gap:12px;align-items:center;background:var(--pine-soft);border-radius:12px;padding:12px 14px;margin:8px 0}
+.badge-on b{font-family:"Fraunces",serif;font-size:1.2rem}
+.plist{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.need{animation:shake .4s;border-color:var(--red)!important;box-shadow:0 0 0 4px rgba(179,32,42,.2)}
+.filebtn{position:relative;overflow:hidden}
+.filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.writing{border-left:5px solid var(--gold);background:#fff;padding:10px 14px;border-radius:8px;margin:10px 0}
+.writing .ans{white-space:pre-wrap;background:var(--cream);border-radius:8px;padding:8px 10px;margin-top:6px}
+.pause{background:var(--gold-soft);border:2px solid var(--gold);color:#6b5208;border-radius:12px;padding:10px 14px;margin-top:10px;font-weight:700}
+.door .tbadge{font-size:.8rem;font-weight:800;margin-top:4px}
+
+/* ---------- Auto-évaluation & tableau de bord ---------- */
+.selfm{background:#fff;border:3px solid var(--info);border-radius:18px;padding:20px;margin-top:22px;box-shadow:var(--shadow)}
+.selfm h3{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.ind{border-top:1px solid var(--line);padding:12px 0;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+.ind .txt{display:flex;gap:8px;align-items:center}
+.ind .cc{font-size:.75rem;font-weight:800;color:var(--muted);background:var(--cream);border-radius:6px;padding:2px 6px;white-space:nowrap}
+.rate{display:flex;gap:6px;flex-wrap:wrap}
+.rate label{display:flex;flex-direction:column;align-items:center;gap:2px;border:2px solid var(--line);border-radius:12px;padding:6px 10px;cursor:pointer;min-width:84px;background:#fff;font-size:.8rem;font-weight:700;text-align:center}
+.rate label span.e{font-size:1.5rem;line-height:1}
+.rate input{position:absolute;opacity:0;pointer-events:none}
+.rate label:has(input:checked){border-color:var(--info);background:var(--info-soft)}
+.rate label:focus-within{outline:3px solid rgba(42,93,138,.35)}
+@media (max-width:640px){.ind{grid-template-columns:1fr}.rate label{min-width:0;flex:1}}
+.selfm .done-msg{background:var(--pine-soft);color:var(--pine);font-weight:800;border-radius:10px;padding:8px 12px;margin-top:10px}
+.pos{display:inline-block;border-radius:8px;padding:3px 8px;font-weight:800;font-size:.82rem;white-space:nowrap}
+.pos0{background:#eef0f1;color:#6b7479}.pos1{background:#fde2e0;color:#8f1d24}.pos2{background:#fdeccc;color:#7a5200}.pos3{background:#dff1e6;color:#17573a}.pos4{background:#d7e8fb;color:#1d4f91}
+.dash table{min-width:760px}
+.dash td,.dash th{font-size:.86rem}
+.fiche{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;margin-top:16px}
+.fiche h3{margin-top:18px}
+.fiche .mbox{border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0;background:#fffdf8}
+.fiche select{width:auto;min-width:190px;padding:5px 8px}
+.fiche .mini{font-size:.86rem;color:var(--muted)}
+.crit-ok{color:var(--pine)}.crit-no{color:#9aa4a8}
+@media print{ .fiche{border:0;padding:0} .fiche .mbox{break-inside:avoid} }
+
+/* ---------- Sapin de progression ---------- */
+.tree svg{width:100%;height:auto;display:block;margin:0 auto;overflow:visible}
+.tree .bb{transform-box:fill-box;transform-origin:center top}
+.tree .gift{transform-box:fill-box;transform-origin:center bottom}
+.tree .starg{transform-box:fill-box;transform-origin:center}
+.tree .lt{animation:tw 1.6s ease-in-out infinite alternate}
+.tree.festive .lt{animation-duration:.6s}
+.tree.festive .body{filter:drop-shadow(0 0 14px rgba(243,210,122,.55))}
+.tree.festive .starg{animation:glow 1.4s ease-in-out infinite alternate}
+.anim-1 .gar{stroke-dasharray:260;animation:draw 1.6s ease-out both}
+.anim-1 .gar:nth-child(2){animation-delay:.35s}.anim-1 .gar:nth-child(3){animation-delay:.7s}
+.anim-2 .bb,.anim-3 .bb{animation:drop .8s cubic-bezier(.3,1.6,.5,1) both}
+.anim-4 .lt{animation:lighton .5s ease-out both,tw 1.6s ease-in-out .9s infinite alternate}
+.anim-5 .gift{animation:rise .7s cubic-bezier(.3,1.5,.5,1) both}
+.anim-6 .starg{animation:starin 1.3s cubic-bezier(.3,1.4,.5,1) both}
+@keyframes draw{from{stroke-dashoffset:260}to{stroke-dashoffset:0}}
+@keyframes drop{from{transform:translateY(-80px);opacity:0}to{transform:none;opacity:1}}
+@keyframes rise{from{transform:scale(.2);opacity:0}to{transform:none;opacity:1}}
+@keyframes starin{from{transform:scale(0) rotate(-200deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes lighton{from{opacity:0;transform:scale(.2)}to{opacity:1}}
+@keyframes tw{from{opacity:.35}to{opacity:1}}
+@keyframes glow{from{filter:drop-shadow(0 0 2px #f3d27a)}to{filter:drop-shadow(0 0 14px #f3d27a)}}
+.tree-cap{text-align:center;margin-top:8px}
+.tree-cap b{font-family:"Fraunces",serif;font-size:1.15rem;color:var(--night)}
+.tree-cap small{display:block;color:var(--muted)}
+.tree-dots{display:flex;gap:6px;justify-content:center;margin-top:8px}
+.tree-dots i{width:12px;height:12px;border-radius:50%;background:var(--line);display:block}
+.tree-dots i.on{background:var(--gold)}
+.cal-layout{display:grid;grid-template-columns:300px 1fr;gap:22px;align-items:start;margin-top:20px}
+.cal-layout .tree-card{position:sticky;top:130px;background:linear-gradient(180deg,#fffdf8,#f3ecdc)}
+.cal-layout .advent{grid-template-columns:repeat(2,1fr);margin-top:0}
+@media (max-width:900px){.cal-layout{grid-template-columns:1fr}.cal-layout .tree-card{position:static}.cal-layout .tree-card .tree{max-width:230px;margin:0 auto}}
+@media (max-width:480px){.cal-layout .advent{grid-template-columns:1fr}}
+.win .tree{width:150px;flex:none;background:rgba(255,255,255,.08);border-radius:16px;padding:8px}
+.hero .tree-cap b{color:#fff}.hero .tree-cap small{color:#cfdde5}
+
+/* ---------- Audio ---------- */
+.say{flex:none;display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;border:2px solid var(--info);background:var(--info-soft);color:var(--info);font-size:1.05rem;padding:0;line-height:1;vertical-align:middle;transition:transform .12s}
+.say:hover{transform:scale(1.08)}
+.say.speaking{background:var(--info);color:#fff;animation:pulse 1s infinite}
+.say.sm{width:30px;height:30px;font-size:.85rem}
+.say.light{border-color:#f3d27a;background:rgba(243,210,122,.15);color:#f3d27a}
+.say-wide{display:inline-flex;align-items:center;gap:8px;border-radius:12px;border:2px solid var(--info);background:var(--info-soft);color:var(--info);font-weight:800;padding:8px 14px}
+.say-wide.light{border-color:#f3d27a;background:rgba(243,210,122,.12);color:#f3d27a}
+.say-wide.speaking{background:var(--info);color:#fff}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(42,93,138,.25)}}
+.audio-ctl{display:flex;gap:6px;flex:none}
+.audio-ctl button{border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;border-radius:999px;padding:6px 10px;font-weight:800;font-size:.82rem;white-space:nowrap}
+.audio-ctl #audioStop{display:none;background:var(--red);border-color:var(--red)}
+.audio-ctl.on #audioStop{display:inline-block}
+.no-audio .say,.no-audio .say-wide,.no-audio .audio-ctl{display:none!important}
+.row-say{display:flex;gap:6px;align-items:center}
+.row-say span.nw{white-space:nowrap}
+footer{background:var(--night);color:#a9bcc8;padding:22px 0;font-size:.9rem;position:relative;z-index:1}
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer button{background:none;border:0;color:#f3d27a;font-weight:800;padding:0}
+
+@media print{
+  body{background:#fff}
+  .topbar,footer,#snow,.noprint,.validate-bar{display:none!important}
+  .view{display:none!important}
+  .view.printing{display:block!important}
+  .card,.block{box-shadow:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<canvas id="snow" aria-hidden="true"></canvas>
+
+<header class="topbar">
+  <div class="wrap bar1">
+    <button class="brand" data-go="accueil" aria-label="Accueil">
+      <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true"><polygon points="20,3 31,20 25,20 34,32 6,32 15,20 9,20" fill="#2e9e5b"/><rect x="17" y="32" width="6" height="5" fill="#8b5a2b"/><circle cx="20" cy="4" r="3" fill="#c99a1c"/><circle cx="15" cy="25" r="1.8" fill="#e04a4a"/><circle cx="25" cy="22" r="1.8" fill="#f3d27a"/></svg>
+      <span class="bt">Le Comptoir des Lutins</span>
+    </button>
+    <div class="audio-ctl" id="audioCtl"><button id="audioSpeed" title="Changer la vitesse de lecture">🔊 Voix normale</button><button id="audioStop">⏹ Stop</button></div>
+    <div class="code-pill" id="codePill" aria-label="Code récolté"></div>
+  </div>
+  <div class="wrap bar2">
+    <nav class="tabs" aria-label="Navigation">
+      <button data-go="accueil">Accueil</button>
+      <button data-go="missions">Calendrier des missions</button>
+      <button data-go="carnet">Carnet du Pro</button>
+      <button data-go="timesup">Time's Up</button>
+      <button data-go="coffre">Le coffre</button>
+      <button data-go="bilan">Mon bilan</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ================= ACCUEIL ================= -->
+<section class="view active" id="v-accueil">
+  <div class="hero">
+    <div>
+      <div id="heroText"><span class="kicker">Scénario 4 · Une réserve bien organisée</span>
+      <h1>Opération Rush de Noël</h1>
+      <p class="lead">Jeudi 18 décembre, 7 h 45. Au <b>Comptoir des Lutins</b>, c'est la période la plus chargée de l'année.</p>
+      <p>Jouets, décorations, chocolats et papier cadeau : le magasin de Pont-à-Mousson vend en boutique et en <b>click &amp; collect</b>. En décembre, il réalise près d'un tiers de son chiffre d'affaires annuel. Tu rejoins l'équipe renfort de Noël.</p>
+      <p>Mauvaise nouvelle : cette nuit, <b>Farfadet, le lutin farceur</b>, s'est glissé dans la réserve. Livraison mélangée, rayonnages en désordre, commandes clients inversées, guirlandes envolées…</p>
+      <p>Le <b>24 décembre à 10 h</b>, 87 clients viendront retirer leurs commandes. Elles sont enfermées dans le <b>coffre du traîneau</b>, verrouillé par un code à 6 chiffres. Chaque mission réussie t'en donne un.</p></div>
+      <div class="row" style="margin-top:18px">
+        <button class="say-wide light" data-say="#heroText">🔊 Écouter l’histoire</button>
+        <button class="btn btn-red" data-go="missions">Ouvrir le calendrier des missions</button>
+        <button class="btn btn-ghost" style="color:#f3d27a" data-go="carnet">Réviser le vocabulaire</button>
+      </div>
+    </div>
+    <div class="hero-art" id="heroTree"></div>
+  </div>
+
+  <div class="grid2 section">
+    <div class="card idcard" id="badge"></div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between"><h3 style="margin:0">Choisis ton niveau à chaque mission</h3><button class="say" data-say="#lvlLegend" aria-label="Écouter">🔊</button></div>
+      <div class="lvl-legend" id="lvlLegend" style="margin-top:10px">
+        <div><span style="font-size:1.6rem">❄️</span><span><b>Flocon</b> : je suis accompagné(e). Les règles sont affichées, les coups de pouce sont gratuits. 1 étoile.</span></div>
+        <div><span style="font-size:1.6rem">⭐</span><span><b>Étoile</b> : je me lance. Moins d'aide, plus de questions, coups de pouce sur demande. 2 étoiles.</span></div>
+        <div><span style="font-size:1.6rem">🛷</span><span><b>Traîneau</b> : je deviens expert(e). Mission complète, calculs, justification écrite, aucun coup de pouce. 3 étoiles.</span></div>
+      </div>
+      <p style="margin-top:10px;font-size:.93rem">Tu peux changer de niveau au début de chaque mission, et refaire une mission réussie à un niveau plus élevé.</p>
+    </div>
+  </div>
+
+  <div class="card section">
+    <h3>Ce que tu vas faire comme un pro</h3>
+    <div class="grid3" style="margin-top:8px">
+      <div><div class="chips"><span class="chip"><i class="dot d-bleu"></i>B1.2 Réceptionner</span></div><p>Contrôler une livraison urgente et rédiger des réserves.</p></div>
+      <div><div class="chips"><span class="chip"><i class="dot d-bleu"></i>B1.3 Stocker</span></div><p>Ranger la réserve en sécurité et appliquer le FIFO.</p></div>
+      <div><div class="chips"><span class="chip"><i class="dot d-jaune"></i>B1.4 Préparer les commandes</span></div><p>Contrôler et préparer les commandes click &amp; collect.</p></div>
+      <div><div class="chips"><span class="chip"><i class="dot d-jaune"></i>B2.5 Démarque et inventaire</span></div><p>Enquêter sur les pertes et compter le stock sans erreur.</p></div>
+      <div><div class="chips"><span class="chip"><i class="dot d-jaune"></i>B1.1 Commandes fournisseurs</span></div><p>Calculer le réassort avant le 24 décembre.</p></div>
+      <div><div class="chips"><span class="chip">📁 Traces CPro</span></div><p>Garder ton bilan imprimé comme trace professionnelle.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MISSIONS (calendrier) ================= -->
+<section class="view" id="v-missions">
+  <h2>Le calendrier des missions</h2>
+  <p><button class="say sm" data-say="#calTxt" aria-label="Écouter">🔊</button> <span id="calTxt">Une porte par jour, du 18 au 23 décembre. Ouvre-les dans l'ordre : chaque mission découvre un chiffre du code du coffre.</span></p>
+  <div class="cal-layout"><aside class="card tree-card" id="calTree"></aside><div class="advent" id="advent"></div></div>
+  <div class="row section">
+    <button class="btn btn-gold" data-go="coffre">Aller au coffre du traîneau</button>
+    <button class="btn btn-ghost" data-go="timesup">Défi Time's Up</button>
+  </div>
+</section>
+
+<!-- ================= MISSION ================= -->
+<section class="view" id="v-mission"><div id="missionRoot"></div></section>
+
+<!-- ================= CARNET ================= -->
+<section class="view" id="v-carnet">
+  <h2>Le Carnet du Pro</h2>
+  <p><button class="say sm" data-say="#carnetTxt" aria-label="Écouter">🔊</button> <span id="carnetTxt">Clique sur une carte pour voir la définition. Coche « Je sais l'expliquer » seulement quand tu peux expliquer le mot avec tes mots, sans lire.</span></p>
+  <div class="row" style="gap:14px"><div class="progress" style="flex:1;min-width:180px"><i id="vprog"></i></div><b id="vcount">0 / 0</b></div>
+  <div class="vgrid" id="vgrid"></div>
+</section>
+
+<!-- ================= TIME'S UP ================= -->
+<section class="view" id="v-timesup">
+  <h2>Time's Up du Pro</h2>
+  <p><button class="say sm" data-say="#tuTxt" aria-label="Écouter">🔊</button> <span id="tuTxt">Fais deviner le mot à ton équipe en 1 min 30. Les mots en rouge sont interdits, comme le mot lui-même et les mots de sa famille. 1 point par mot trouvé.</span></p>
+  <div class="tu">
+    <div class="tu-card" id="tuCard"><div class="tu-word">Prêt(e) ?</div><p style="color:#cfdde5">Appuie sur « Démarrer » quand ton équipe est prête.</p></div>
+    <div class="card">
+      <div class="timer" id="tuTimer">1:30</div>
+      <p style="margin:0 0 12px">Score : <b id="tuScore">0</b> point(s)</p>
+      <div class="row">
+        <button class="btn btn-green" id="tuStart">Démarrer</button>
+        <button class="btn btn-gold" id="tuOk" disabled>Trouvé !</button>
+        <button class="btn btn-ghost" id="tuPass" disabled>Passer</button>
+      </div>
+      <h3 style="margin-top:20px">Scores des manches</h3>
+      <ol id="tuHist" style="padding-left:20px;margin:0"></ol>
+    </div>
+  </div>
+</section>
+
+<!-- ================= COFFRE ================= -->
+<section class="view" id="v-coffre">
+  <div class="safe">
+    <h2>Le coffre du traîneau</h2>
+    <p><button class="say sm light" data-say="#safeTxt" aria-label="Écouter">🔊</button> <span id="safeTxt">Saisis le code complet, dans l'ordre des missions, du 18 au 23 décembre.</span></p>
+    <div class="collected" id="collected"></div>
+    <div class="slots" id="slots"></div>
+    <button class="btn btn-red" id="safeBtn">Déverrouiller</button>
+    <p id="safeMsg" style="margin-top:14px;font-weight:800"></p>
+  </div>
+  <div id="safeWin" class="section"></div>
+</section>
+
+<!-- ================= BILAN ================= -->
+<section class="view" id="v-bilan">
+  <h2>Mon bilan de mission</h2>
+  <p><button class="say sm" data-say="#bilanTxt" aria-label="Écouter">🔊</button> <span id="bilanTxt">Ce bilan est une trace professionnelle. Imprime-le ou enregistre-le en PDF pour ton dossier CPro. Pour chaque compétence, coche où tu en es : je découvre, je fais avec aide, ou je fais seul.</span></p>
+  <div class="card" id="bilanCard"></div>
+  <div class="row section noprint">
+    <button class="btn btn-green" id="printBilan">Imprimer / enregistrer en PDF</button>
+    <button class="btn btn-ghost" id="resetAll" style="color:var(--red)">Tout recommencer</button>
+  </div>
+</section>
+
+<section class="view" id="v-print"></section>
+
+<!-- ================= PROF ================= -->
+<section class="view prof" id="v-prof">
+  <h2>Espace enseignant</h2>
+  <div class="card" id="profCard"></div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Le Comptoir des Lutins · Scénario 4 · 1CAP EPC · Mme FRISON Marie · 2026–2027</span>
+    <button data-go="prof">Espace enseignant</button>
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   DONNÉES
+   ========================================================= */
+const LEVELS = {
+  flocon:   {name:'Flocon',   icon:'❄️', stars:1, desc:'Je suis accompagné(e)', more:'Règles affichées, coups de pouce gratuits.'},
+  etoile:   {name:'Étoile',   icon:'⭐', stars:2, desc:'Je me lance', more:'Plus de questions, coups de pouce sur demande.'},
+  traineau: {name:'Traîneau', icon:'🛷', stars:3, desc:'Je deviens expert(e)', more:'Mission complète, calculs et écrit. Aucun coup de pouce.'}
+};
+const PAST = {
+  vert:['d-vert','Découverte'], jaune:['d-jaune','Entraînement'], orange:['d-orange','Réinvestissement'], bleu:['d-bleu','Autonomisation'], rouge:['d-rouge','Maîtrise']
+};
+const COMPS = [
+  {code:'B1.1', label:'Participer à la passation des commandes fournisseurs', p:'jaune', savoirs:'Cadencier ; niveaux de stock ; inventaire ; documents et informations nécessaires à la passation d’une commande ; étapes de la commande fournisseur.'},
+  {code:'B1.2', label:'Réceptionner', p:'bleu', savoirs:'Documents relatifs à la livraison ; procédures de réception ; contrôles qualitatifs et quantitatifs ; anomalies et conduite à tenir ; enregistrement de la réception ; règles d’hygiène et de sécurité.'},
+  {code:'B1.3', label:'Stocker', p:'bleu', savoirs:'Notions et niveaux de stock ; organisation du stockage ; règles de rangement et de conservation ; matériel de manutention et d’aide à la manutention ; règles d’hygiène et de sécurité.'},
+  {code:'B1.4', label:'Préparer les commandes destinées aux clients', p:'jaune', savoirs:'Préparation des commandes destinées aux clients ; procédures de préparation ; documents et outils associés ; contrôle des références, quantités et conformité ; organisation des produits préparés.'},
+  {code:'B2.5', label:'Lutter contre la démarque et participer aux opérations d’inventaire', p:'jaune', savoirs:'Démarque connue et inconnue ; causes et moyens de lutte ; protection des produits / antivol selon l’activité ; anti-gaspillage ; objectifs, types et procédures d’inventaire ; fiabilité des comptages.'}
+];
+const compChip = code => { const c = COMPS.find(x=>x.code===code); return `<span class="chip"><i class="dot ${PAST[c.p][0]}"></i>${c.code} ${c.label.length>34?c.label.slice(0,32)+'…':c.label}</span>`; };
+
+/* --- SVG documents --- */
+const SVG_RACK = `
+<svg class="svgdoc" viewBox="0 0 720 300" role="img" aria-label="Plan des zones de la réserve">
+  <rect x="0" y="0" width="720" height="300" rx="12" fill="#f8f3e8"/>
+  <text x="20" y="28" font-weight="800" font-size="15" fill="#0d2433">Rayonnage de la réserve (vue de face)</text>
+  <rect x="20" y="40" width="380" height="240" rx="6" fill="#fff" stroke="#0d2433" stroke-width="3"/>
+  <line x1="20" y1="120" x2="400" y2="120" stroke="#0d2433" stroke-width="3"/>
+  <line x1="20" y1="200" x2="400" y2="200" stroke="#0d2433" stroke-width="3"/>
+  <rect x="24" y="44" width="372" height="72" fill="#e6eff7"/><text x="210" y="86" text-anchor="middle" font-weight="800" font-size="17" fill="#2a5d8a">C · NIVEAU HAUT</text>
+  <rect x="24" y="124" width="372" height="72" fill="#e3f1e8"/><text x="210" y="166" text-anchor="middle" font-weight="800" font-size="17" fill="#17573a">B · NIVEAU MILIEU</text>
+  <rect x="24" y="204" width="372" height="72" fill="#fbf1d4"/><text x="210" y="246" text-anchor="middle" font-weight="800" font-size="17" fill="#6b5208">A · SOL / PALETTE</text>
+  <g transform="translate(430,40)">
+    <rect width="270" height="110" rx="8" fill="#fff" stroke="#b3202a" stroke-width="3"/>
+    <text x="135" y="40" text-anchor="middle" font-weight="800" font-size="16" fill="#b3202a">D · LOCAL CHOCOLATS</text>
+    <text x="135" y="66" text-anchor="middle" font-size="13" fill="#1c2a30">18 °C maximum · au sec</text>
+    <text x="135" y="86" text-anchor="middle" font-size="13" fill="#1c2a30">à l'abri de la lumière</text>
+  </g>
+  <g transform="translate(430,170)">
+    <rect width="270" height="110" rx="8" fill="#fff" stroke="#e67e22" stroke-width="3"/>
+    <text x="135" y="40" text-anchor="middle" font-weight="800" font-size="16" fill="#b85d0d">E · ARMOIRE SÉCURISÉE</text>
+    <text x="135" y="66" text-anchor="middle" font-size="13" fill="#1c2a30">produits inflammables</text>
+    <text x="135" y="86" text-anchor="middle" font-size="13" fill="#1c2a30">(aérosols), fermée à clé</text>
+  </g>
+</svg>`;
+const SVG_PLAN = `
+<svg class="svgdoc" viewBox="0 0 720 260" role="img" aria-label="Plan de la réserve avec les allées A à D">
+  <rect x="0" y="0" width="720" height="260" rx="12" fill="#f8f3e8"/>
+  <text x="20" y="28" font-weight="800" font-size="15" fill="#0d2433">Plan de la réserve (vue de dessus)</text>
+  <rect x="20" y="110" width="70" height="60" rx="6" fill="#b3202a"/><text x="55" y="137" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">PORTE</text><text x="55" y="153" text-anchor="middle" font-size="11" fill="#fff">magasin</text>
+  <path d="M95 140 H700" stroke="#0d2433" stroke-width="2" stroke-dasharray="6 6" fill="none" opacity=".5"/>
+  <g font-weight="800" font-size="15" text-anchor="middle">
+    <rect x="120" y="50" width="120" height="180" rx="6" fill="#fbf1d4" stroke="#0d2433" stroke-width="2"/><text x="180" y="145" fill="#6b5208">Allée A</text>
+    <rect x="260" y="50" width="120" height="180" rx="6" fill="#e3f1e8" stroke="#0d2433" stroke-width="2"/><text x="320" y="145" fill="#17573a">Allée B</text>
+    <rect x="400" y="50" width="120" height="180" rx="6" fill="#e6eff7" stroke="#0d2433" stroke-width="2"/><text x="460" y="145" fill="#2a5d8a">Allée C</text>
+    <rect x="540" y="50" width="160" height="180" rx="6" fill="#fff" stroke="#b3202a" stroke-width="2"/><text x="620" y="135" fill="#b3202a">D · local</text><text x="620" y="155" fill="#b3202a">chocolats</text>
+  </g>
+  <text x="400" y="252" text-anchor="middle" font-size="12" fill="#5b6a70">Adresse = Allée – Travée – Niveau (B = bas, M = milieu, H = haut). Ex. : C-03-H = allée C, travée 3, niveau haut.</text>
+</svg>`;
+
+/* --- Missions --- */
+const ACTIONS = ['Accepter','Accepter avec réserves écrites','Refuser (retour avec le transporteur)'];
+const STATUTS = ['Conforme','Manquant','Excédent','Avarie (casse)','Erreur de référence'];
+function m1Table(withAction){
+  const cols = [
+    {label:'Réf.', key:'ref'},{label:'Désignation', key:'des'},{label:'Qté commandée', key:'bc'},{label:'Qté sur le BL', key:'bl'},{label:'Constat à l’ouverture', key:'cst'},
+    {label:'Statut', select:STATUTS, ans:'st'}
+  ];
+  if(withAction) cols.push({label:'Décision', select:ACTIONS, ans:'ac'});
+  return {type:'table', q:'Contrôle la livraison ligne par ligne : compare le bon de commande, le bon de livraison (BL) et ce que tu constates.', cols,
+    rows:[
+      {ref:'CAL-024',des:'Calendrier de l’Avent chocolat 24 cases',bc:40,bl:40,cst:'38 boîtes comptées',a:{st:'Manquant',ac:['Accepter avec réserves écrites']}},
+      {ref:'BOU-R06',des:'Boîte de 6 boules en verre rouge',bc:30,bl:30,cst:'30 boîtes, dont 3 boîtes de boules cassées',a:{st:'Avarie (casse)',ac:['Accepter avec réserves écrites','Refuser (retour avec le transporteur)']}},
+      {ref:'GUI-L10',des:'Guirlande LED 10 m',bc:25,bl:25,cst:'25 guirlandes, emballages intacts',a:{st:'Conforme',ac:['Accepter']}},
+      {ref:'PEL-R30',des:'Peluche renne 30 cm',bc:20,bl:20,cst:'20 peluches… le carton indique « PEL-O30 Peluche ours polaire »',a:{st:'Erreur de référence',ac:['Refuser (retour avec le transporteur)']}},
+      {ref:'PAP-D02',des:'Rouleau de papier cadeau doré 2 m',bc:50,bl:60,cst:'60 rouleaux',a:{st:'Excédent',ac:['Accepter avec réserves écrites','Refuser (retour avec le transporteur)']}},
+      {ref:'CHO-PN1',des:'Père Noël en chocolat 100 g',bc:48,bl:48,cst:'48 pièces, emballages intacts, DDM 30/09/2027',a:{st:'Conforme',ac:['Accepter']}},
+      {ref:'SAP-150',des:'Sapin artificiel 150 cm (carton de 14 kg)',bc:10,bl:10,cst:'9 cartons',a:{st:'Manquant',ac:['Accepter avec réserves écrites']}}
+    ],
+    hint:'Compare d’abord <b>Qté commandée</b> et <b>Qté sur le BL</b> : si le BL dit plus que la commande, c’est un <b>excédent</b>. Compare ensuite <b>Qté sur le BL</b> et le <b>constat</b> : s’il en manque, c’est un <b>manquant</b>. Produit abîmé = <b>avarie</b>. Mauvais produit = <b>erreur de référence</b>.'
+  };
+}
+const M1_QRES = {type:'qcm', q:'Quelle mention est valable sur le bon de livraison ?', options:[
+  '« Sous réserve de déballage »',
+  '« Manque 2 boîtes CAL-024. 3 boîtes BOU-R06 cassées. 1 carton SAP-150 manquant. » + date, heure, nom et signature',
+  '« Colis abîmés »'], answer:1,
+  hint:'Une réserve doit être <b>précise</b> (quoi, combien), <b>datée</b> et <b>signée</b>. Une mention vague n’a aucune valeur.'};
+const M1_QDELAI = {type:'qcm', q:'Les réserves doivent être confirmées au transporteur (lettre recommandée ou autre moyen qui prouve l’envoi) dans quel délai ?', options:['24 heures','3 jours, sans compter les jours fériés','15 jours'], answer:1,
+  hint:'C’est un délai court, fixé par le Code de commerce : quelques jours seulement.'};
+
+const MISSIONS = [
+{ id:1, day:18, digit:2, title:'Le camion de l’aube', comps:['B1.2','B1.3'],
+  speech:'Le camion de Nordlys Distribution (Metz) vient d’arriver avec notre dernière grosse livraison avant Noël. Farfadet a mélangé les étiquettes cette nuit. Avant de signer quoi que ce soit, contrôle tout !',
+  farf:'Farfadet a glissé des erreurs dans la livraison. Si tu signes sans contrôler, le magasin perdra ses recours contre le transporteur.',
+  levels:{
+    flocon:[
+      {type:'rules', title:'Fiche méthode de Mme Guérin', html:`<ol style="margin:0;padding-left:20px"><li>Je compte les colis et je vérifie leur état <b>avant</b> que le livreur parte.</li><li>Je compare le <b>bon de commande</b> (ce qu’on a demandé) et le <b>bon de livraison</b> (ce que le fournisseur annonce).</li><li>Je compare le BL et ce que je reçois vraiment.</li><li>En cas d’anomalie, j’écris des <b>réserves</b> précises sur le BL, je date et je signe.</li></ol>`},
+      m1Table(false), M1_QRES, M1_QDELAI ],
+    etoile:[ m1Table(true), M1_QRES, M1_QDELAI,
+      {type:'number', q:'Combien de calendriers de l’Avent entrent réellement dans le stock ?', answer:38, unit:'boîtes', hint:'Ce n’est pas le nombre commandé : c’est ce que tu as compté.'} ],
+    traineau:[ m1Table(true), M1_QDELAI,
+      {type:'number', q:'Combien de lignes présentent une anomalie ?', answer:5, unit:'lignes'},
+      {type:'number', q:'Combien de boîtes de boules saines entrent dans le stock ?', answer:27, unit:'boîtes'},
+      {type:'text', q:'Rédige exactement les réserves que tu inscris sur le bon de livraison.', min:40,
+        expected:'18/12/2026, 7 h 50 – Manque 2 boîtes CAL-024 ; 3 boîtes BOU-R06 cassées ; 1 carton SAP-150 manquant ; 20 PEL-O30 livrées au lieu de PEL-R30 (refusées) ; 10 rouleaux PAP-D02 en excédent (refusés). Nom + signature. Confirmation au transporteur sous 3 jours.'} ]
+  }},
+{ id:2, day:18, digit:4, title:'La réserve sens dessus dessous', comps:['B1.3'],
+  speech:'Il faut ranger la livraison tout de suite : le magasin ouvre à 9 h. Chaque produit doit être à la bonne place pour la sécurité de l’équipe et pour la conservation.',
+  farf:'Farfadet a rangé les cartons n’importe comment : un carton lourd tout en haut, les chocolats près du radiateur…',
+  levels:{
+    flocon:[
+      {type:'rules', title:'Les 5 règles d’or de la réserve', html:`<ol style="margin:0;padding-left:20px"><li><b>Lourd ou encombrant</b> → en bas, au sol ou sur palette.</li><li><b>Fragile</b> ou souvent utilisé → au milieu, entre les genoux et les épaules.</li><li><b>Léger</b> → en haut.</li><li><b>Chocolat</b> → au frais (18 °C max), au sec et à l’abri de la lumière.</li><li><b>Aérosol inflammable</b> → dans l’armoire sécurisée.</li></ol>`},
+      {type:'doc', title:'Plan des zones', html:SVG_RACK},
+      null, /* table inserted below */
+      {type:'qcm', q:'Pour déplacer la palette de 9 sapins (126 kg), tu utilises :', options:['Un diable','Un transpalette','Tes bras, à deux collègues'], answer:1, hint:'Une palette se soulève avec les fourches d’un appareil de manutention.'} ],
+    etoile:[
+      {type:'doc', title:'Plan des zones', html:SVG_RACK}, null,
+      {type:'qcm', q:'Un nouveau lot de Pères Noël en chocolat arrive (DDM 09/2027). L’ancien lot (DDM 03/2027) est déjà en réserve. Tu ranges :', options:['Le nouveau lot devant, pour qu’il se voie','Le nouveau lot derrière, l’ancien lot devant','Les deux lots mélangés'], answer:1, hint:'FIFO : premier entré, premier sorti.'},
+      {type:'qcm', q:'Pour déplacer la palette de 9 sapins (126 kg), tu utilises :', options:['Un diable','Un transpalette','Tes bras, à deux collègues'], answer:1} ],
+    traineau:[
+      {type:'doc', title:'Plan des zones', html:SVG_RACK}, null,
+      {type:'multi', q:'Voici l’état de la réserve après le passage de Farfadet. Coche les 4 situations NON conformes.', options:[
+        'Un carton de sapin (14 kg) est posé sur le niveau haut',
+        'Des cartons vides bloquent l’allée qui mène à l’issue de secours',
+        'Les calendriers en chocolat sont stockés contre le radiateur',
+        'Un collègue monte sur une chaise de bureau à roulettes pour atteindre le niveau haut',
+        'Les produits sont rangés par famille avec une étiquette d’emplacement',
+        'Les aérosols sont rangés dans l’armoire fermée',
+        'Le transpalette est garé à sa place, fourches baissées'], answers:[0,1,2,3]},
+      {type:'qcm', q:'Un nouveau lot de Pères Noël en chocolat arrive (DDM 09/2027). L’ancien lot (DDM 03/2027) est déjà en réserve. Tu ranges :', options:['Le nouveau lot devant, pour qu’il se voie','Le nouveau lot derrière, l’ancien lot devant','Les deux lots mélangés'], answer:1},
+      {type:'text', q:'Rédige une consigne courte (2 ou 3 lignes) à afficher dans la réserve pour l’équipe renfort de Noël.', min:40,
+        expected:'Exemple : « Lourd en bas, léger en haut, fragile au milieu. Chocolats au local D, aérosols dans l’armoire E. Ancien lot devant (FIFO). Allées et issues de secours toujours dégagées. J’utilise un escabeau ou un transpalette. »'} ]
+  }},
+{ id:3, day:19, digit:1, title:'Click & collect en folie', comps:['B1.4'],
+  speech:'Mme Lambert retire sa commande demain matin. Farfadet a préparé son bac à notre place… Je n’ai aucune confiance. Contrôle la préparation et remets la procédure dans l’ordre.',
+  farf:'Une commande mal préparée, c’est un client déçu à Noël et une mauvaise image pour le magasin.',
+  levels:{
+    flocon:[ null,
+      {type:'order', q:'Remets les étapes de la préparation d’une commande dans l’ordre.', items:[
+        'Lire le bon de préparation','Prélever les articles en réserve','Contrôler les références, les quantités et l’état','Emballer et étiqueter (n° de commande + nom du client)','Déposer en zone de retrait et signaler « commande prête »'],
+        hint:'On commence toujours par le document. On termine par ce qui permet au client de venir chercher sa commande.'} ],
+    etoile:[ null,
+      {type:'order', q:'Remets les 7 étapes de la préparation d’une commande dans l’ordre.', items:[
+        'Imprimer et lire le bon de préparation','Repérer les emplacements (adresses) des articles','Prélever les articles','Contrôler les références, les quantités et l’état','Protéger et emballer les articles','Étiqueter le colis (n° de commande + nom du client)','Déposer en zone de retrait et passer la commande au statut « prête »'],
+        hint:'Le contrôle se fait juste après le prélèvement, avant d’emballer.'},
+      {type:'qcm', q:'Pour une autre commande, il ne reste plus de peluche renne en stock. Que fais-tu ?', options:['Je mets une peluche ours à la place, sans rien dire','Je préviens la responsable : elle contacte le client pour proposer un produit de remplacement ou un remboursement','J’annule toute la commande'], answer:1, hint:'On ne décide jamais à la place du client.'} ],
+    traineau:[ {type:'doc', title:'Plan de la réserve', html:SVG_PLAN}, null,
+      {type:'order', q:'Classe les articles dans l’ordre du parcours de prélèvement le plus court depuis la porte.', items:['BOU-R06 · B-01-M','GUI-L10 · B-02-M','PEL-R30 · C-03-H','PAP-D02 · C-04-H','CAL-024 · D-01 (local chocolats)']},
+      {type:'order', q:'Remets les 7 étapes de la préparation d’une commande dans l’ordre.', items:[
+        'Imprimer et lire le bon de préparation','Repérer les emplacements (adresses) des articles','Prélever les articles','Contrôler les références, les quantités et l’état','Protéger et emballer les articles','Étiqueter le colis (n° de commande + nom du client)','Déposer en zone de retrait et passer la commande au statut « prête »']},
+      {type:'number', q:'Combien d’articles au total doit contenir le colis de Mme Lambert ?', answer:8, unit:'articles'},
+      {type:'qcm', q:'Pour une autre commande, il ne reste plus de peluche renne en stock. Que fais-tu ?', options:['Je mets une peluche ours à la place, sans rien dire','Je préviens la responsable : elle contacte le client pour proposer un produit de remplacement ou un remboursement','J’annule toute la commande'], answer:1} ]
+  }},
+{ id:4, day:20, digit:2, title:'Où sont passées les guirlandes ?', comps:['B2.5'],
+  speech:'Samedi avant Noël, record de fréquentation… et de pertes. Aide-moi à comprendre d’où viennent les écarts : on ne lutte pas de la même façon contre un vol et contre une erreur de saisie.',
+  farf:'Farfadet adore la foule : c’est là que les produits disparaissent le plus facilement.',
+  levels:{
+    flocon:[
+      {type:'rules', title:'Mémo démarque', html:`<p style="margin:0">La <b>démarque</b>, c’est la perte de marchandises (et donc d’argent) pour le magasin.</p><ul style="margin:.4em 0 0;padding-left:20px"><li><b>Démarque connue</b> : on connaît la cause et on l’<b>enregistre</b> (casse, produit abîmé ou périmé retiré de la vente).</li><li><b>Démarque inconnue</b> : la perte n’est pas enregistrée, on la découvre à l’inventaire (vols, erreurs administratives).</li></ul>`},
+      {type:'qcm', q:'La démarque, c’est :', options:['La perte de marchandises subie par le magasin','La marque d’un produit','Une promotion de Noël'], answer:0},
+      null ],
+    etoile:[ null,
+      {type:'number', q:'Cette semaine, 4 guirlandes LED vendues 19,90 € l’unité ont été volées. Quelle perte de chiffre d’affaires TTC cela représente-t-il ?', answer:79.6, unit:'€', hint:'Quantité × prix de vente unitaire.'} ],
+    traineau:[ null,
+      {type:'table', q:'Associe à chaque cause le moyen de lutte le plus adapté.', cols:[{label:'Cause', key:'c'},{label:'Moyen de lutte', select:['Antivols sur les produits, caméra, présence de l’équipe en rayon','Contrôle des sorties du personnel et procédures claires','Double contrôle à la réception et à l’étiquetage','Manipuler avec soin, ranger les fragiles au milieu','Rotation FIFO et contrôle régulier des dates'], ans:'m'}],
+        rows:[
+          {c:'Vol externe',a:{m:'Antivols sur les produits, caméra, présence de l’équipe en rayon'}},
+          {c:'Vol interne',a:{m:'Contrôle des sorties du personnel et procédures claires'}},
+          {c:'Erreur administrative',a:{m:'Double contrôle à la réception et à l’étiquetage'}},
+          {c:'Casse / détérioration',a:{m:'Manipuler avec soin, ranger les fragiles au milieu'}},
+          {c:'Produit dont la date est dépassée',a:{m:'Rotation FIFO et contrôle régulier des dates'}}
+        ]},
+      {type:'number', q:'Cette semaine, 4 guirlandes LED vendues 19,90 € l’unité ont été volées. Quelle perte de chiffre d’affaires TTC cela représente-t-il ?', answer:79.6, unit:'€'} ]
+  }},
+{ id:5, day:21, digit:2, title:'L’inventaire tournant du dimanche', comps:['B2.5','B1.3'],
+  speech:'Ce matin, avant l’ouverture, on fait un inventaire tournant des allées B et C. Le logiciel donne le stock théorique, toi tu comptes le stock réel. Il faut des comptages fiables !',
+  farf:'Farfadet a déplacé des cartons pendant la nuit. Si tu comptes mal, toutes les commandes de réassort seront fausses.',
+  levels:{
+    flocon:[
+      {type:'rules', title:'La formule', html:`<p style="margin:0;font-size:1.1rem"><b>Écart = stock compté (réel) − stock théorique (logiciel)</b></p><p style="margin:.4em 0 0">Écart négatif (−) : il manque des produits. Écart positif (+) : il y a plus de produits que prévu. Écart 0 : tout va bien. La première ligne est faite pour toi.</p>`},
+      null ],
+    etoile:[ null,
+      {type:'multi', q:'Coche les 4 bonnes pratiques pour un comptage fiable.', options:[
+        'Compter en binôme : l’un compte, l’autre note','Ne pas déplacer de marchandises pendant le comptage','Recompter quand un écart apparaît','Compter zone par zone et marquer les zones terminées','Estimer le contenu des cartons sans les ouvrir','Continuer la mise en rayon dans la zone en cours de comptage'], answers:[0,1,2,3],
+        hint:'Une bonne pratique évite d’oublier un produit ou de le compter deux fois.'} ],
+    traineau:[ null,
+      {type:'number', q:'Quelle est la valeur totale des écarts (au prix d’achat HT) ? Indique le signe.', answer:-28.3, unit:'€'},
+      {type:'multi', q:'Coche les 4 bonnes pratiques pour un comptage fiable.', options:[
+        'Compter en binôme : l’un compte, l’autre note','Ne pas déplacer de marchandises pendant le comptage','Recompter quand un écart apparaît','Compter zone par zone et marquer les zones terminées','Estimer le contenu des cartons sans les ouvrir','Continuer la mise en rayon dans la zone en cours de comptage'], answers:[0,1,2,3]},
+      {type:'text', q:'Il y a 2 peluches renne de plus que prévu. Explique à Mme Guérin une cause possible (pense à la livraison du 18 décembre).', min:30,
+        expected:'Exemple : des peluches ours (PEL-O30) ont pu être enregistrées ou rangées comme des peluches renne (PEL-R30) : erreur de référence à la réception ou erreur de saisie. Il faut recompter et vérifier les étiquettes.'} ]
+  }},
+{ id:6, day:22, digit:6, title:'Le réassort de la dernière chance', comps:['B1.1'],
+  speech:'Nordlys peut encore nous livrer le 23 décembre si on commande avant midi. Regarde le cadencier : quels produits faut-il recommander, et combien ?',
+  farf:'Une rupture de stock le 23 décembre, c’est des ventes perdues et des clients qui partent chez le concurrent.',
+  levels:{
+    flocon:[
+      {type:'rules', title:'Les deux règles du réassort', html:`<ol style="margin:0;padding-left:20px"><li>Je commande si <b>stock actuel ≤ stock d’alerte</b>.</li><li>Quantité à commander = <b>stock maximum − stock actuel</b>.</li></ol><p style="margin:.5em 0 0">Exemple (1ʳᵉ ligne) : 8 ≤ 10 → je commande. 40 − 8 = <b>32</b>.</p>`},
+      null ],
+    etoile:[ null,
+      {type:'qcm', q:'Pourquoi faut-il passer la commande avant midi ?', options:['Pour respecter le délai de livraison du fournisseur et éviter la rupture','Parce que le logiciel s’éteint l’après-midi','Pour avoir une promotion'], answer:0} ],
+    traineau:[ null,
+      {type:'number', q:'Quel est le montant total HT de la commande ?', answer:427.2, unit:'€ HT'},
+      {type:'multi', q:'Coche les 5 informations indispensables sur le bon de commande fournisseur.', options:[
+        'Nom et coordonnées du fournisseur','Références et désignations des produits','Quantités commandées','Prix unitaires HT','Date et délai de livraison souhaité','Nom des clients du click & collect','Le stock de l’année dernière'], answers:[0,1,2,3,4]} ]
+  }}
+];
+
+/* tables shared between levels (inserted where null) */
+function m2Table(){
+  return {type:'table', q:'Indique la zone de rangement de chaque produit livré.', cols:[{label:'Produit', key:'p'},{label:'Caractéristique', key:'c'},{label:'Zone', select:['A · Sol / palette','B · Niveau milieu','C · Niveau haut','D · Local chocolats','E · Armoire sécurisée'], ans:'z'}],
+    rows:[
+      {p:'Sapins artificiels 150 cm',c:'cartons de 14 kg, encombrants',a:{z:'A · Sol / palette'}},
+      {p:'Boîtes de boules en verre',c:'fragiles',a:{z:'B · Niveau milieu'}},
+      {p:'Guirlandes LED',c:'cartons de 5 kg, sortis plusieurs fois par jour',a:{z:'B · Niveau milieu'}},
+      {p:'Peluches',c:'cartons légers (2 kg)',a:{z:'C · Niveau haut'}},
+      {p:'Rouleaux de papier cadeau',c:'légers',a:{z:['C · Niveau haut','B · Niveau milieu']}},
+      {p:'Calendriers de l’Avent chocolat',c:'denrée sensible à la chaleur',a:{z:'D · Local chocolats'}},
+      {p:'Pères Noël en chocolat',c:'denrée sensible à la chaleur',a:{z:'D · Local chocolats'}},
+      {p:'Neige artificielle en aérosol',c:'pictogramme « flamme »',a:{z:'E · Armoire sécurisée'}}
+    ],
+    hint:'Pense au poids (sécurité du dos), à la fragilité et aux conditions de conservation.'};
+}
+function m3Table(){
+  return {type:'table', q:'Commande CC-2412-087 · Mme Lambert · retrait le 20/12 à 10 h. Contrôle chaque ligne du bac préparé par Farfadet.', cols:[
+    {label:'Réf.', key:'ref'},{label:'Désignation', key:'des'},{label:'Qté demandée', key:'q'},{label:'Adresse', key:'ad'},{label:'Dans le bac', key:'bac'},
+    {label:'Contrôle', select:['OK','Mauvaise référence','Mauvaise quantité','Produit abîmé'], ans:'k'}],
+    rows:[
+      {ref:'CAL-024',des:'Calendrier de l’Avent chocolat',q:2,ad:'D-01',bac:'CAL-024 × 2',a:{k:'OK'}},
+      {ref:'PEL-R30',des:'Peluche renne 30 cm',q:1,ad:'C-03-H',bac:'PEL-O30 Peluche ours × 1',a:{k:'Mauvaise référence'}},
+      {ref:'PAP-D02',des:'Papier cadeau doré',q:3,ad:'C-04-H',bac:'PAP-D02 × 2',a:{k:'Mauvaise quantité'}},
+      {ref:'GUI-L10',des:'Guirlande LED 10 m',q:1,ad:'B-02-M',bac:'GUI-L10 × 1',a:{k:'OK'}},
+      {ref:'BOU-R06',des:'Boîte de 6 boules rouges',q:1,ad:'B-01-M',bac:'BOU-R06 × 1 (boîte fêlée)',a:{k:'Produit abîmé'}}
+    ],
+    hint:'Compare chaque ligne : la <b>référence</b>, puis la <b>quantité</b>, puis l’<b>état</b> du produit.'};
+}
+function m4Table(withCause){
+  const cols=[{label:'Situation', key:'s'},{label:'Type de démarque', select:['Démarque connue','Démarque inconnue'], ans:'t'}];
+  if(withCause) cols.push({label:'Cause', select:['Vol externe','Vol interne','Erreur administrative','Casse / détérioration'], ans:'c'});
+  return {type:'table', q: withCause?'Pour chaque situation, indique le type de démarque et sa cause.':'Pour chaque situation, indique le type de démarque.', cols,
+    rows:[
+      {s:'3 boîtes de boules cassées pendant la mise en rayon, enregistrées en « casse » dans le logiciel',a:{t:'Démarque connue',c:'Casse / détérioration'}},
+      {s:'La caméra montre un client qui glisse une guirlande LED dans son sac et sort sans payer',a:{t:'Démarque inconnue',c:'Vol externe'}},
+      {s:'Des Pères Noël en chocolat ont fondu dans la vitrine ; ils sont retirés de la vente et enregistrés',a:{t:'Démarque connue',c:'Casse / détérioration'}},
+      {s:'À la réception, 60 rouleaux ont été reçus mais 50 ont été saisis dans le logiciel',a:{t:'Démarque inconnue',c:'Erreur administrative'}},
+      {s:'Un salarié emporte une peluche chez lui sans passer en caisse',a:{t:'Démarque inconnue',c:'Vol interne'}},
+      {s:'Une étiquette à 4,50 € a été collée sur une guirlande vendue 19,90 €',a:{t:'Démarque inconnue',c:'Erreur administrative'}}
+    ],
+    hint:'Question à se poser : est-ce que la perte a été <b>enregistrée</b> au moment où elle s’est produite ? Si oui → connue. Si on la découvre plus tard → inconnue.'};
+}
+function m5Table(level){
+  const cols=[{label:'Réf.', key:'ref'},{label:'Désignation', key:'des'},{label:'Stock théorique', key:'th'},{label:'Stock compté', key:'co'},{label:'Écart', input:true, ans:'e'}];
+  if(level==='traineau'){ cols.splice(4,0,{label:'Prix d’achat HT', key:'pa'}); cols.push({label:'Valeur de l’écart (€)', input:true, ans:'v'}); }
+  const rows=[
+    {ref:'GUI-L10',des:'Guirlande LED 10 m',th:25,co:21,pa:'9,50 €',a:{e:-4,v:-38}},
+    {ref:'BOU-R06',des:'Boîte de 6 boules rouges',th:27,co:27,pa:'7,40 €',a:{e:0,v:0}},
+    {ref:'PAP-D02',des:'Papier cadeau doré',th:50,co:47,pa:'2,10 €',a:{e:-3,v:-6.3}},
+    {ref:'PEL-R30',des:'Peluche renne 30 cm',th:18,co:20,pa:'8,00 €',a:{e:2,v:16}},
+    {ref:'CAL-024',des:'Calendrier de l’Avent chocolat',th:38,co:38,pa:'6,20 €',a:{e:0,v:0}}
+  ];
+  if(level==='flocon') rows[0].prefill={e:-4};
+  return {type:'table', q:'Calcule l’écart pour chaque produit compté.' + (level==='traineau'?' Calcule aussi la valeur de chaque écart (écart × prix d’achat HT).':''), cols, rows,
+    hint:'Écart = stock compté − stock théorique. Exemple : 21 − 25 = −4. N’oublie pas le signe −.'};
+}
+function m6Table(level){
+  const cols=[{label:'Réf.', key:'ref'},{label:'Produit', key:'p'},{label:'Stock actuel', key:'sa'},{label:'Stock d’alerte', key:'al'},{label:'Stock maximum', key:'mx'},{label:'Prix d’achat HT', key:'pa'},
+    {label:'Je commande ?', select:['Oui','Non'], ans:'o'},{label:'Quantité', input:true, ans:'q'}];
+  const rows=[
+    {ref:'CAL-024',p:'Calendrier de l’Avent chocolat',sa:8,al:10,mx:40,pa:'6,20 €',a:{o:'Oui',q:32}},
+    {ref:'GUI-L10',p:'Guirlande LED 10 m',sa:14,al:10,mx:30,pa:'9,50 €',a:{o:'Non',q:0}},
+    {ref:'PAP-D02',p:'Papier cadeau doré',sa:12,al:15,mx:60,pa:'2,10 €',a:{o:'Oui',q:48}},
+    {ref:'PEL-R30',p:'Peluche renne 30 cm',sa:4,al:6,mx:20,pa:'8,00 €',a:{o:'Oui',q:16}},
+    {ref:'BOU-R06',p:'Boîte de 6 boules rouges',sa:22,al:10,mx:30,pa:'7,40 €',a:{o:'Non',q:0}}
+  ];
+  if(level==='flocon') rows[0].prefill={o:'Oui',q:32};
+  return {type:'table', q:'Extrait du cadencier au 22/12 au soir. Décide pour chaque produit et calcule la quantité à commander (écris 0 si tu ne commandes pas).', cols, rows,
+    hint:'Je commande si stock actuel ≤ stock d’alerte. Quantité = stock maximum − stock actuel.'};
+}
+/* insert shared tables */
+(function fill(){
+  const M = id => MISSIONS.find(m=>m.id===id);
+  const put = (id,lvl,block)=>{ const arr=M(id).levels[lvl]; arr[arr.indexOf(null)] = block; };
+  ['flocon','etoile','traineau'].forEach(l=>{
+    put(2,l,m2Table()); put(3,l,m3Table());
+    put(4,l,m4Table(l!=='flocon')); put(5,l,m5Table(l)); put(6,l,m6Table(l));
+  });
+})();
+const CODE = MISSIONS.map(m=>m.digit).join('');
+
+/* ---- Réglages enseignant (modifiables) ---- */
+const PROF_CODE = 'MANDARINE4729';   // affiche le corrigé dans l'espace enseignant
+const TERRAIN_CODE = 'COMETE83';    // valide une étape terrain
+const REQUIRE_TERRAIN = false;   // true = le coffre exige aussi les 6 étapes terrain validées
+const PAUSE_AFTER = 4;           // nombre d'essais ratés avant une pause de réflexion
+const PAUSE_SECONDS = 30;
+
+/* ---- Mots simples (primo-arrivants, lecteurs fragiles) ---- */
+const SIMPLE = {
+ 1:'Un camion arrive. Tu vérifies les produits. Tu compares 3 documents. S’il y a un problème, tu l’écris sur le bon de livraison.',
+ 2:'Tu ranges les produits dans la réserve. Lourd en bas. Léger en haut. Fragile au milieu. Chocolat au frais. Aérosol dans l’armoire.',
+ 3:'Une cliente a commandé sur internet. Tu vérifies sa commande. Tu cherches les erreurs. Tu remets les étapes dans l’ordre.',
+ 4:'Des produits sont cassés ou ont disparu. Tu cherches pourquoi. Connue : on sait et on l’a noté. Inconnue : on découvre la perte plus tard.',
+ 5:'Tu comptes les produits. Tu compares avec l’ordinateur. Tu calcules la différence : compté moins ordinateur.',
+ 6:'Il reste peu de produits. Tu décides quoi commander et combien.'
+};
+
+/* ---- Étapes terrain (plateau technique) ---- */
+const TERRAIN = {
+ 1:{mode:'Seul(e)', icon:'📦', task:'Réceptionne un vrai colis préparé par ton enseignante, avec son bon de livraison. Une anomalie est cachée !', crit:['Je compte les colis et je vérifie leur état avant de signer','Je compare le bon de livraison et les produits reçus','Je trouve l’anomalie','J’écris une réserve précise, datée et signée sur le bon de livraison']},
+ 2:{mode:'Seul(e)', icon:'🏋️', task:'Range 5 cartons dans la réserve du plateau technique en respectant les règles de stockage et les gestes de sécurité.', crit:['Lourd en bas, léger en haut, fragile au milieu','J’applique le FIFO : l’ancien lot devant','Je plie les jambes et je garde le dos droit pour porter','L’allée reste dégagée']},
+ 3:{mode:'Seul(e)', icon:'🛍️', task:'Prépare une vraie commande click & collect à partir d’un bon de préparation (4 ou 5 articles du plateau technique).', crit:['Je prélève les bonnes références et les bonnes quantités','Je vérifie l’état de chaque produit','J’emballe et je protège les produits','L’étiquette porte le n° de commande et le nom du client','Je dépose la commande en zone de retrait']},
+ 4:{mode:'En équipe de 3', icon:'🔍', task:'En équipe, faites le tour du magasin pédagogique : repérez 3 risques de démarque et proposez un moyen de lutte pour chacun.', crit:['L’équipe repère 3 risques réels','Chaque risque est classé : démarque connue ou inconnue','Un moyen de lutte adapté est proposé pour chaque risque','Chaque membre présente un risque à l’oral']},
+ 5:{mode:'En binôme', icon:'🧮', task:'En binôme, faites l’inventaire tournant d’une étagère du plateau : l’un compte, l’autre note. Puis inversez les rôles et calculez les écarts.', crit:['Le binôme se répartit les rôles (compteur / noteur)','La zone est comptée sans déplacer de produits','Un écart est recompté','Les écarts sont calculés avec le bon signe']},
+ 6:{mode:'Seul(e)', icon:'📝', task:'Remplis un bon de commande fournisseur (papier ou logiciel) à partir du cadencier que te donne ton enseignante.', crit:['Le fournisseur et ses coordonnées sont indiqués','Les références, désignations et quantités sont justes','Les prix unitaires et le total HT sont calculés','La date et le délai de livraison sont indiqués']}
+};
+
+/* ---- Indicateurs « Je sais… » par mission (auto-évaluation) ---- */
+const MEVAL = {
+ 1:[{c:'B1.2',t:'Je compare le bon de commande, le bon de livraison et les produits reçus.'},{c:'B1.2',t:'Je repère et je nomme une anomalie : manquant, excédent, avarie, erreur de référence.'},{c:'B1.2',t:'Je sais quoi faire : accepter, écrire des réserves ou refuser.'},{c:'B1.3',t:'Je sais quelle quantité entre réellement dans le stock.'}],
+ 2:[{c:'B1.3',t:'Je range selon le poids, la fragilité et la conservation du produit.'},{c:'B1.3',t:'J’applique le FIFO : premier entré, premier sorti.'},{c:'B1.3',t:'Je choisis le bon matériel de manutention.'},{c:'B1.3',t:'Je repère les situations dangereuses dans une réserve.'}],
+ 3:[{c:'B1.4',t:'Je contrôle les références, les quantités et l’état des produits préparés.'},{c:'B1.4',t:'Je suis les étapes de préparation d’une commande dans l’ordre.'},{c:'B1.4',t:'Je lis une adresse de stockage pour trouver un produit.'},{c:'B1.4',t:'Je sais réagir quand un produit manque (je préviens, je ne décide pas à la place du client).'}],
+ 4:[{c:'B2.5',t:'Je distingue la démarque connue et la démarque inconnue.'},{c:'B2.5',t:'Je trouve la cause d’une perte (vol, erreur, casse).'},{c:'B2.5',t:'Je propose un moyen de lutte adapté.'},{c:'B2.5',t:'Je calcule la valeur d’une perte.'}],
+ 5:[{c:'B2.5',t:'Je calcule un écart d’inventaire avec le bon signe.'},{c:'B2.5',t:'J’applique les règles d’un comptage fiable.'},{c:'B2.5',t:'J’explique une cause possible d’un écart.'},{c:'B1.3',t:'Je comprends le lien entre le stock réel et le stock du logiciel.'}],
+ 6:[{c:'B1.1',t:'Je repère quand il faut commander grâce au stock d’alerte.'},{c:'B1.1',t:'Je calcule la quantité à commander.'},{c:'B1.1',t:'Je connais les informations d’un bon de commande fournisseur.'},{c:'B1.1',t:'Je calcule le montant d’une commande.'}]
+};
+const RATES3=[['😕','Je découvre'],['🙂','Avec de l’aide'],['😃','Seul(e)']];
+const POS=['Non évalué','Non maîtrisé','Partiellement maîtrisé','Maîtrisé','Bien maîtrisé'];
+
+/* ---- Pictogrammes des choix ---- */
+const ICONS = {
+ 'Conforme':'✅','Manquant':'➖','Excédent':'➕','Avarie (casse)':'💥','Erreur de référence':'🔀',
+ 'Accepter':'👍','Accepter avec réserves écrites':'✍️','Refuser (retour avec le transporteur)':'↩️',
+ 'A · Sol / palette':'⬇️','B · Niveau milieu':'↔️','C · Niveau haut':'⬆️','D · Local chocolats':'🍫','E · Armoire sécurisée':'🔥',
+ 'OK':'✅','Mauvaise référence':'🔀','Mauvaise quantité':'🔢','Produit abîmé':'💥',
+ 'Démarque connue':'📋','Démarque inconnue':'❓','Vol externe':'🕵️','Vol interne':'👤','Erreur administrative':'📝','Casse / détérioration':'💥',
+ 'Oui':'✅','Non':'❌'
+};
+const VICON=['📄','🚚','✍️','💥','➖','➕','🔄','📅','🛻','📍','📋','🛒','🖐️','📒','❓','🔁','⚖️','🚨','📊','🚫'];
+
+/* --- Vocabulaire --- */
+const VOCAB = [
+ {w:'Bon de commande', d:'Document envoyé au fournisseur pour commander des produits : références, quantités, prix, délai de livraison.', ex:'Le 22/12, on envoie un bon de commande à Nordlys pour les calendriers.', f:['commander','fournisseur','acheter']},
+ {w:'Bon de livraison (BL)', d:'Document qui accompagne la marchandise. On le compare au bon de commande et aux colis reçus avant de signer.', ex:'Le BL annonce 60 rouleaux alors qu’on en a commandé 50.', f:['livrer','camion','signer']},
+ {w:'Réserves', d:'Mentions précises, datées et signées écrites sur le BL quand il y a une anomalie. Elles sont confirmées au transporteur sous 3 jours.', ex:'« Manque 2 boîtes CAL-024 » + date + signature.', f:['réserver','écrire','anomalie']},
+ {w:'Avarie', d:'Dommage subi par la marchandise pendant le transport (casse, humidité, écrasement).', ex:'3 boîtes de boules en verre cassées.', f:['cassé','abîmé','transport']},
+ {w:'Manquant', d:'Il y a moins de produits reçus que de produits annoncés sur le BL.', ex:'9 sapins reçus au lieu de 10.', f:['manquer','moins','oublier']},
+ {w:'Excédent', d:'Il y a plus de produits livrés que de produits commandés.', ex:'60 rouleaux livrés pour 50 commandés.', f:['trop','plus','dépasser']},
+ {w:'FIFO', d:'First In, First Out : premier entré, premier sorti. Les produits les plus anciens sortent en premier.', ex:'L’ancien lot de chocolats est placé devant le nouveau.', f:['premier','ancien','sortir']},
+ {w:'DLC / DDM', d:'DLC : « à consommer jusqu’au », après la date le produit ne doit plus être vendu. DDM : « à consommer de préférence avant le », le produit peut perdre ses qualités après cette date.', ex:'Les Pères Noël en chocolat ont une DDM.', f:['date','périmé','consommer']},
+ {w:'Transpalette', d:'Appareil de manutention à fourches qui sert à soulever et déplacer des palettes.', ex:'La palette de 9 sapins (126 kg) se déplace au transpalette.', f:['palette','fourche','soulever']},
+ {w:'Adressage', d:'Code qui indique l’emplacement exact d’un produit dans la réserve : allée – travée – niveau.', ex:'C-03-H : allée C, travée 3, niveau haut.', f:['adresse','allée','emplacement']},
+ {w:'Bon de préparation', d:'Liste des articles et quantités à prélever pour préparer une commande client.', ex:'Commande CC-2412-087 de Mme Lambert.', f:['préparer','liste','commande']},
+ {w:'Click & collect', d:'Le client commande en ligne puis retire sa commande en magasin.', ex:'87 commandes à retirer le 24 décembre.', f:['internet','retirer','commander']},
+ {w:'Prélèvement (picking)', d:'Action d’aller chercher les articles d’une commande dans la réserve.', ex:'On suit les adresses pour faire le parcours le plus court.', f:['prélever','prendre','chercher']},
+ {w:'Démarque connue', d:'Perte de marchandise dont on connaît la cause et qu’on enregistre (casse, produit abîmé ou périmé retiré).', ex:'Les chocolats fondus retirés de la vente et enregistrés.', f:['perte','connaître','casse']},
+ {w:'Démarque inconnue', d:'Perte non enregistrée, découverte à l’inventaire : vols (externes ou internes) et erreurs administratives.', ex:'4 guirlandes manquent sans explication.', f:['perte','vol','inconnu']},
+ {w:'Inventaire tournant', d:'Comptage d’une partie du stock, zone par zone, à plusieurs moments de l’année.', ex:'On compte les allées B et C le dimanche matin.', f:['compter','stock','tourner']},
+ {w:'Écart d’inventaire', d:'Différence entre le stock compté (réel) et le stock théorique (logiciel).', ex:'21 − 25 = −4 guirlandes.', f:['différence','compter','stock']},
+ {w:'Stock d’alerte', d:'Niveau de stock à partir duquel il faut passer une commande pour éviter la rupture.', ex:'Calendriers : alerte à 10, il en reste 8.', f:['alerte','minimum','commander']},
+ {w:'Cadencier', d:'Tableau de suivi qui indique, pour chaque produit, les stocks, les ventes et les commandes. Il aide à décider du réassort.', ex:'On lit le cadencier du 22/12 pour commander.', f:['tableau','suivi','commande']},
+ {w:'Rupture de stock', d:'Le produit n’est plus disponible : on ne peut plus le vendre.', ex:'Plus aucune peluche renne en réserve.', f:['vide','plus de','manquer']}
+];
+
+/* =========================================================
+   ÉTAT
+   ========================================================= */
+const KEY='comptoir-lutins-s4';
+const blank=()=>({name:'',team:'',missions:{},vocab:{},self:{},notes:{good:'',work:''},tu:[],texts:{},terrain:{},selfm:{},safeOpen:false,pendingAnim:null,updated:0});
+const slug=n=>String(n).trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-');
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+function lsDel(k){ try{ localStorage.removeItem(k); }catch(e){} }
+function profiles(){ try{ return JSON.parse(lsGet(KEY+'-profiles')||'[]'); }catch(e){ return []; } }
+let S=blank();
+function loadProfile(name){ let o={}; try{ o=JSON.parse(lsGet(KEY+'-p-'+slug(name))||'{}'); }catch(e){} S=Object.assign(blank(),o,{name}); lsSet(KEY+'-current',name); }
+function save(){ if(!S.name||!S.name.trim()) return; S.updated=Date.now(); lsSet(KEY+'-p-'+slug(S.name),JSON.stringify(S)); const ps=profiles(); if(!ps.includes(S.name)){ ps.push(S.name); lsSet(KEY+'-profiles',JSON.stringify(ps)); } lsSet(KEY+'-current',S.name); }
+(function initState(){
+  const legacy=lsGet(KEY); if(legacy){ try{ const o=JSON.parse(legacy); if(o.name&&o.name.trim()){ S=Object.assign(blank(),o); save(); } }catch(e){} lsDel(KEY); }
+  const cur=lsGet(KEY+'-current'); if(cur && profiles().includes(cur)) loadProfile(cur);
+})();
+
+/* =========================================================
+   UTILITAIRES
+   ========================================================= */
+const $ = s=>document.querySelector(s);
+const $$ = s=>[...document.querySelectorAll(s)];
+function h(tag, attrs={}, html=''){ const e=document.createElement(tag); for(const k in attrs){ if(k==='class') e.className=attrs[k]; else e.setAttribute(k,attrs[k]); } if(html) e.innerHTML=html; return e; }
+function parseNum(v){ if(v==null) return NaN; v=String(v).replace(/\s/g,'').replace('€','').replace(/HT/i,'').replace(',','.').replace('−','-').replace('+',''); if(v==='') return NaN; return Number(v); }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function starStr(n){ return '★'.repeat(n)+'☆'.repeat(3-n); }
+
+/* =========================================================
+   AUDIO : lecture des consignes (synthèse vocale du navigateur)
+   ========================================================= */
+const TTS = { ok:'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window, voice:null, rate:0.95, btn:null };
+const RATES=[[0.95,'🔊 Voix normale'],[0.75,'🐢 Voix lente']];
+function pickVoice(){
+  if(!TTS.ok) return; const vs=speechSynthesis.getVoices().filter(v=>/^fr/i.test(v.lang)); if(!vs.length) return;
+  const score=v=>(/fr[-_]FR/i.test(v.lang)?4:0)+(/natural|online|neural|google|premium|enhanced/i.test(v.name)?3:0)+(/am[ée]lie|thomas|denise|audrey|marie|julie|henri/i.test(v.name)?1:0);
+  TTS.voice=vs.sort((a,b)=>score(b)-score(a))[0];
+}
+if(TTS.ok){ pickVoice(); speechSynthesis.onvoiceschanged=pickVoice; } else document.documentElement.classList.add('no-audio');
+function prononce(t){
+  const MO=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  return t.replace(/\s+/g,' ').replace(/\s*\(BL\)/g,'')
+    .replace(/(\d{1,2})\/(\d{2})\/(20\d\d)/g,(m,d,mo,y)=>`${Number(d)} ${MO[Number(mo)-1]} ${y}`)
+    .replace(/Qté/g,'Quantité').replace(/ = /g,' égale ').replace(/(\d) h\b/g,'$1 heures').replace(/(\d)ʳᵉ/g,'$1re')
+    .replace(/(\d{1,2})\/12\/2026/g,'$1 décembre 2026').replace(/(\d{1,2})\/12\b/g,'$1 décembre').replace(/(\d{2})\/(20\d\d)/g,(m,a,y)=>['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'][Number(a)-1]+' '+y)
+    .replace(/\bBL\b/g,'bon de livraison').replace(/\bQté\b/g,'Quantité').replace(/\bRéf\./g,'Référence').replace(/\bDDM\b/g,'D D M').replace(/\bDLC\b/g,'D L C')
+    .replace(/\bTTC\b/g,'toutes taxes comprises').replace(/\bHT\b/g,'hors taxes').replace(/\bCPro\b/g,'C pro').replace(/\bLED\b/g,'led')
+    .replace(/×/g,' fois ').replace(/≤/g,' inférieur ou égal à ').replace(/−\s?(\d)/g,'moins $1').replace(/ − /g,' moins ').replace(/°C/g,' degrés')
+    .replace(/(\d),(\d{2}) ?€/g,'$1 euros $2').replace(/€/g,' euros').replace(/→/g,', ').replace(/[«»"]/g,'')
+    .replace(/\b([A-Z]{3})-([A-Z0-9]{2,3})\b/g,(m,a,b)=>a.split('').join(' ')+' '+b.split('').join(' '))
+    .replace(/\b([A-D])-(\d{2})(?:-([BMH]))?\b/g,(m,a,n,l)=>`allée ${a}, travée ${Number(n)}`+(l?`, niveau ${{B:'bas',M:'milieu',H:'haut'}[l]}`:''))
+    .replace(/[❄️⭐🛷🎄🧝💡✔✘✅🔊🎁🎀🐢⏹]/gu,'');
+}
+function plain(html){ const d=document.createElement('div'); d.innerHTML=html; d.querySelectorAll('svg,.say,.say-wide,select,button').forEach(x=>x.remove()); return d.textContent; }
+function stopSpeak(){ if(!TTS.ok) return; speechSynthesis.cancel(); if(TTS.btn) TTS.btn.classList.remove('speaking'); TTS.btn=null; $('#audioCtl').classList.remove('on'); }
+function speak(text, btn){
+  if(!TTS.ok) return;
+  const same = TTS.btn===btn && speechSynthesis.speaking; stopSpeak(); if(same) return;
+  const chunks=(prononce(text).match(/[^.!?:;]+[.!?:;]*/g)||[text]).map(c=>c.trim()).filter(Boolean);
+  TTS.btn=btn||null; if(btn) btn.classList.add('speaking'); $('#audioCtl').classList.add('on');
+  chunks.forEach((c,i)=>{ const u=new SpeechSynthesisUtterance(c); u.lang='fr-FR'; if(TTS.voice) u.voice=TTS.voice; u.rate=TTS.rate;
+    if(i===chunks.length-1){ u.onend=u.onerror=()=>{ if(TTS.btn===btn){ if(btn) btn.classList.remove('speaking'); TTS.btn=null; $('#audioCtl').classList.remove('on'); } }; }
+    speechSynthesis.speak(u); });
+}
+function sayBtn(getText, cls='say', label='🔊'){ const b=h('button',{class:cls,type:'button','aria-label':'Écouter la consigne',title:'Écouter'},label); b.addEventListener('click',e=>{ e.stopPropagation(); e.preventDefault(); speak(typeof getText==='function'?getText():getText, b); }); return b; }
+document.addEventListener('click',e=>{ const b=e.target.closest('[data-say]'); if(b){ e.preventDefault(); const t=$(b.dataset.say); if(t) speak(plain(t.innerHTML), b); } });
+$('#audioStop').addEventListener('click',stopSpeak);
+$('#audioSpeed').addEventListener('click',()=>{ const i=RATES.findIndex(r=>r[0]===TTS.rate); const n=RATES[(i+1)%RATES.length]; TTS.rate=n[0]; $('#audioSpeed').textContent=n[1]; try{localStorage.setItem(KEY+'-rate',n[0]);}catch(e){} });
+try{ const r=Number(localStorage.getItem(KEY+'-rate')); const f=RATES.find(x=>x[0]===r); if(f){ TTS.rate=f[0]; $('#audioSpeed').textContent=f[1]; } }catch(e){}
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+function go(v){
+  stopSpeak();
+  $$('.view').forEach(x=>x.classList.remove('active'));
+  const t=$('#v-'+v); if(t) t.classList.add('active');
+  $$('nav.tabs button').forEach(b=>b.classList.toggle('on', b.dataset.go===v || (v==='mission'&&b.dataset.go==='missions')));
+  if(v==='missions') renderAdvent();
+  if(v==='coffre') renderSafe();
+  if(v==='bilan') renderBilan();
+  if(v==='carnet') renderVocab();
+  if(v==='prof') renderProf();
+  window.scrollTo({top:0,behavior:'instant'});
+}
+document.addEventListener('click',e=>{ const b=e.target.closest('[data-go]'); if(b){ e.preventDefault(); go(b.dataset.go); } });
+
+function renderPill(){
+  const p=$('#codePill'); p.innerHTML='';
+  MISSIONS.forEach(m=>{ const d=S.missions[m.id]; p.appendChild(h('span',{class:d&&d.done?'got':''}, d&&d.done?String(m.digit):'?')); });
+}
+
+/* =========================================================
+   SAPIN DE PROGRESSION
+   ========================================================= */
+const DECOS=['la guirlande dorée','les boules rouges','les boules dorées et bleues','les guirlandes lumineuses','les cadeaux','l’étoile du sommet'];
+function treeSVG(done, anim, opt={}){
+  const has=i=>done.includes(i);
+  const ghost='fill="none" stroke="#c9b98f" stroke-width="2" stroke-dasharray="5 5" opacity=".8"';
+  const bb=(x,y,c,d,r=9)=>`<g class="bb" style="animation-delay:${d}s"><line x1="${x}" y1="${y-r-6}" x2="${x}" y2="${y-r}" stroke="#c99a1c" stroke-width="1.5"/><circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/><circle cx="${x-3}" cy="${y-3}" r="2.6" fill="#fff" opacity=".7"/></g>`;
+  const L=[[118,88],[150,96],[182,84],[92,150],[126,142],[160,158],[200,148],[78,212],[112,226],[150,234],[190,222],[224,208],[58,292],[96,302],[136,310],[176,308],[214,298],[248,288]];
+  const LC=['#fff3a8','#ff8a8a','#8fd3ff','#b7f5a5'];
+  let g='';
+  if(opt.bg) g+='<circle cx="150" cy="190" r="170" fill="#1b4560"/>';
+  g+='<rect x="135" y="316" width="30" height="34" rx="3" fill="#7a4a24"/>';
+  g+='<g class="body"><polygon points="150,170 268,322 32,322" fill="#1f7a4f"/><polygon points="150,92 238,216 62,216" fill="#23895a"/><polygon points="150,40 206,130 94,130" fill="#2e9e5b"/></g>';
+  // 1 guirlande dorée
+  if(has(1)) g+=`<g class="d d1 ${anim===1?'anim-1':''}"><path class="gar" d="M102 124 Q150 152 198 120" fill="none" stroke="#f3d27a" stroke-width="5" stroke-linecap="round"/><path class="gar" d="M74 208 Q150 248 228 200" fill="none" stroke="#f3d27a" stroke-width="5" stroke-linecap="round"/><path class="gar" d="M44 312 Q150 352 258 306" fill="none" stroke="#f3d27a" stroke-width="5" stroke-linecap="round"/></g>`;
+  // 4 lumières
+  if(has(4)) g+=`<g class="d d4 ${anim===4?'anim-4':''}">`+L.map((p,i)=>`<circle class="lt" cx="${p[0]}" cy="${p[1]}" r="4.2" fill="${LC[i%4]}" style="animation-delay:${(anim===4?i*0.06:0)}s,${(i%5)*0.3+0.9}s"/>`).join('')+'</g>';
+  // 2 boules rouges
+  if(has(2)) g+=`<g class="d d2 ${anim===2?'anim-2':''}">`+[[124,112],[178,176],[108,192],[206,262],[94,272],[160,286]].map((p,i)=>bb(p[0],p[1],'#d62f3a',i*0.12)).join('')+'</g>';
+  // 3 boules dorées / bleues
+  if(has(3)) g+=`<g class="d d3 ${anim===3?'anim-3':''}">`+[[168,118],[132,168],[194,204],[140,252],[230,296],[72,300]].map((p,i)=>bb(p[0],p[1],i%2?'#2f6fd1':'#c99a1c',i*0.12,8)).join('')+'</g>';
+  // 5 cadeaux
+  if(has(5)) g+=`<g class="d d5 ${anim===5?'anim-5':''}">
+    <g class="gift" style="animation-delay:0s"><rect x="58" y="322" width="62" height="40" rx="4" fill="#b3202a"/><rect x="85" y="322" width="8" height="40" fill="#f3d27a"/><rect x="58" y="337" width="62" height="7" fill="#f3d27a"/><path d="M89 322 q-14 -14 -18 0 M89 322 q14 -14 18 0" stroke="#f3d27a" stroke-width="3" fill="none"/></g>
+    <g class="gift" style="animation-delay:.15s"><rect x="186" y="316" width="58" height="46" rx="4" fill="#17573a"/><rect x="211" y="316" width="8" height="46" fill="#fff"/><rect x="186" y="334" width="58" height="7" fill="#fff"/></g>
+    <g class="gift" style="animation-delay:.3s"><rect x="126" y="336" width="48" height="28" rx="4" fill="#2a5d8a"/><rect x="146" y="336" width="8" height="28" fill="#f3d27a"/></g></g>`;
+  else g+=`<rect x="58" y="322" width="62" height="40" rx="4" ${ghost}/><rect x="186" y="316" width="58" height="46" rx="4" ${ghost}/>`;
+  // 6 étoile
+  const star='150,8 158,26 178,27 162,40 168,60 150,48 132,60 138,40 122,27 142,26';
+  if(has(6)) g+=`<g class="d d6 ${anim===6?'anim-6':''}"><g class="starg"><polygon points="${star}" fill="#f3c63a" stroke="#c99a1c" stroke-width="2"/></g></g>`;
+  else g+=`<polygon points="${star}" ${ghost}/>`;
+  return `<svg viewBox="0 0 300 370" role="img" aria-label="Sapin décoré : ${done.length} décorations sur 6">${g}</svg>`;
+}
+function doneList(){ return MISSIONS.filter(m=>S.missions[m.id]&&S.missions[m.id].done).map(m=>m.id); }
+function renderTree(el, anim=null, opt={}){
+  if(!el) return; const d=doneList(); const festive=S.safeOpen && d.length===6;
+  const nextId=MISSIONS.find(m=>!d.includes(m.id));
+  const cap = opt.nocap ? '' : `<div class="tree-cap"><b>${festive?'Joyeux Noël !':d.length+' / 6 décorations'}</b><small>${festive?'Le coffre est ouvert, le sapin brille de mille feux.':d.length===6?'Ouvre le coffre pour illuminer le sapin.':'Mission '+nextId.id+' : '+DECOS[nextId.id-1]}</small><div class="tree-dots">${MISSIONS.map(m=>`<i class="${d.includes(m.id)?'on':''}"></i>`).join('')}</div></div>`;
+  el.innerHTML=`<div class="tree ${festive?'festive':''}">${treeSVG(d,anim,opt)}</div>${cap}`;
+}
+
+/* =========================================================
+   CALENDRIER
+   ========================================================= */
+function renderAdvent(){
+  renderTree($('#calTree'), S.pendingAnim||null); if(S.pendingAnim){ S.pendingAnim=null; save(); }
+  const g=$('#advent'); g.innerHTML='';
+  MISSIONS.forEach(m=>{
+    const st=S.missions[m.id]; const done=st&&st.done;
+    const b=h('button',{class:'door'+(done?' done':''),'aria-label':`Mission ${m.id} : ${m.title}`});
+    b.innerHTML = done ? `<div class="face"><div class="row" style="justify-content:space-between;align-items:flex-start"><div class="num">${m.day}<small>décembre</small></div><div class="digit">${m.digit}</div></div><div><div class="ttl">${m.title}</div><div class="stars">${starStr(st.stars)}</div><div class="comp" style="color:var(--muted)">Réussie au niveau ${LEVELS[st.level].name} · rejouer</div><div class="tbadge" style="color:${S.terrain[m.id]?'var(--pine)':'#9a7a12'}">${S.terrain[m.id]?'🧰 Terrain validé':'🧰 Étape terrain à faire'}</div><div class="tbadge" style="color:${selfDone(S,m.id)?'var(--pine)':'#9a7a12'}">${selfDone(S,m.id)?'🪞 Auto-évaluation faite':'🪞 Auto-évaluation à faire'}</div></div></div>`
+      : `<span class="ribbon"></span><span class="bow">🎀</span><div class="face"><div class="num">${m.day}<small>décembre · mission ${m.id}</small></div><div><div class="ttl">${m.title}</div><div class="comp">${m.comps.join(' · ')}</div></div></div>`;
+    b.addEventListener('click',()=>openMission(m.id));
+    g.appendChild(b);
+  });
+}
+
+/* =========================================================
+   MISSION
+   ========================================================= */
+let current=null;
+function openMission(id){
+  if(!S.name){ needBadge(); return; }
+  const m=MISSIONS.find(x=>x.id===id); current={m,level:null,blocks:[],hints:0,tries:0};
+  const root=$('#missionRoot'); root.innerHTML='';
+  const st=S.missions[id];
+  root.appendChild(h('button',{class:'backlink','data-go':'missions'},'← Retour au calendrier'));
+  const head=h('div',{class:'m-head'});
+  head.innerHTML=`<div class="m-date"><b>${m.day}</b>déc.</div><div style="flex:1;min-width:220px"><div style="font-weight:800;color:var(--muted);font-size:.9rem">MISSION ${m.id} / 6</div><h2 style="margin:.1em 0 .3em">${m.title}</h2><div class="chips">${m.comps.map(compChip).join('')}</div></div>`;
+  root.appendChild(head);
+  if(st&&st.done) root.appendChild(h('div',{class:'farf',style:'background:var(--pine)'},`✅ Mission déjà réussie au niveau <b>&nbsp;${LEVELS[st.level].name}&nbsp;</b> : chiffre <b>&nbsp;${m.digit}</b>. Tu peux la rejouer à un autre niveau.`));
+  const sp=h('div',{class:'speech'});
+  sp.innerHTML=`<div class="avatar"><svg width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="15" r="8" fill="#e8b98f"/><path d="M8 38c0-8 5-13 12-13s12 5 12 13z" fill="#b3202a"/><path d="M11 14c0-7 4-10 9-10s9 3 9 10c-2-3-5-4-9-4s-7 1-9 4z" fill="#5a3a22"/></svg></div><div class="bubble"><div class="who">Mme Guérin, responsable du magasin</div>${m.speech}</div>`;
+  root.appendChild(sp);
+  sp.querySelector('.bubble .who').appendChild(sayBtn(()=>'Madame Guérin dit : '+m.speech+' Attention : '+m.farf,'say sm')); sp.querySelector('.who').style.cssText='display:flex;gap:8px;align-items:center;justify-content:space-between';
+  root.appendChild(h('div',{class:'farf'},`<span style="font-size:1.5rem">🧝</span><span>${m.farf}</span>`));
+  const simp=h('div',{class:'simple'},`<b>📗 En mots simples</b><span style="flex:1">${SIMPLE[m.id]}</span>`); simp.appendChild(sayBtn(()=>SIMPLE[m.id],'say sm')); root.appendChild(simp);
+  const lh=h('div',{class:'row',style:'margin-top:18px'}); lh.appendChild(h('h3',{style:'margin:0'},'Choisis ton niveau')); lh.appendChild(sayBtn(()=>'Choisis ton niveau. '+Object.values(LEVELS).map(L=>`Niveau ${L.name} : ${L.desc}. ${L.more}`).join(' '),'say sm')); root.appendChild(lh);
+  const lp=h('div',{class:'levelpick'});
+  Object.entries(LEVELS).forEach(([k,L])=>{
+    const b=h('button',{class:'lvl','data-l':k});
+    b.innerHTML=`<span class="ic">${L.icon}</span><b>${L.name}</b><span>${L.desc}</span><small>${L.more}</small><small class="stars" style="color:var(--gold)">${starStr(L.stars)}</small>`;
+    b.addEventListener('click',()=>{ $$('.lvl').forEach(x=>x.classList.remove('on')); b.classList.add('on'); startLevel(k); });
+    lp.appendChild(b);
+  });
+  root.appendChild(lp);
+  root.appendChild(h('div',{id:'mBody'}));
+  root.appendChild(h('div',{id:'selfmWrap'}));
+  root.appendChild(renderTerrain(m));
+  if(st&&st.done) $('#selfmWrap').appendChild(renderSelfm(m));
+  go('mission');
+}
+
+function startLevel(level){
+  current.level=level; current.hints=0; current.blocks=[]; current.tries=0; clearInterval(current.pauseT); current.paused=false;
+  const body=$('#mBody'); body.innerHTML='';
+  let n=0;
+  current.m.levels[level].forEach(b=>{
+    const r=renderBlock(b, level, b.type==='doc'||b.type==='rules'?null:++n);
+    body.appendChild(r.el); current.blocks.push(r);
+  });
+  const bar=h('div',{class:'validate-bar'});
+  bar.innerHTML=`<span><b>${LEVELS[level].icon} Niveau ${LEVELS[level].name}</b> · réponds à toutes les questions puis valide.</span>`;
+  const vb=h('button',{class:'btn btn-red',id:'validateBtn'},'Valider ma mission'); vb.addEventListener('click',validate); bar.appendChild(vb);
+  body.appendChild(bar);
+  body.appendChild(h('div',{class:'result',id:'mResult'}));
+  body.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function renderBlock(b, level, num){
+  const showMarks = level!=='traineau';
+  if(b.type==='doc'||b.type==='rules'){
+    const e=h('div',{class:'block '+(b.type==='rules'?'rules':'doc')},`<div class="doc-title">${b.title||'Document'}</div>${b.html}`);
+    if(b.type==='rules'){ const dt=e.querySelector('.doc-title'); dt.style.cssText='display:flex;gap:8px;align-items:center'; dt.prepend(sayBtn(()=>(b.title||'')+'. '+plain(b.html),'say sm')); }
+    return {el:e, auto:false, check:()=>({ok:true})};
+  }
+  const e=h('div',{class:'block'});
+  const bh=h('div',{class:'bhead'},`<span class="bnum">${num}</span><span class="bq" style="flex:1">${b.q}</span>`);
+  bh.appendChild(sayBtn(()=>blockSpeech(b,num)));
+  e.appendChild(bh);
+  const fb=h('div',{class:'fb'});
+  let check;
+
+  if(b.type==='table'){
+    const tw=h('div',{class:'tablewrap'}); const t=h('table');
+    t.innerHTML='<thead><tr>'+b.cols.map(c=>`<th>${c.label}</th>`).join('')+'</tr></thead>';
+    const tb=h('tbody'); const cells=[];
+    b.rows.forEach((r,ri)=>{
+      const tr=h('tr');
+      b.cols.forEach(c=>{
+        const td=h('td');
+        if(c.key){ td.innerHTML=r[c.key]; if(c===b.cols.find(x=>x.key)){ const w=h('div',{class:'row-say'}); w.appendChild(sayBtn(()=>`Ligne ${ri+1}. `+b.cols.filter(x=>x.key).map(x=>`${x.label} : ${r[x.key]}`).join('. ')+'.','say sm')); w.appendChild(h('span',String(r[c.key]).length<12?{class:'nw'}:{},r[c.key])); td.innerHTML=''; td.appendChild(w); } }
+        else if(c.select){
+          const s=h('select',{'aria-label':c.label}); s.innerHTML='<option value="">— choisir —</option>'+c.select.map(o=>`<option value="${o}">${ICONS[o]?ICONS[o]+' ':''}${o}</option>`).join('');
+          td.appendChild(s);
+          if(r.prefill&&r.prefill[c.ans]!=null){ s.value=r.prefill[c.ans]; s.disabled=true; td.classList.add('prefill'); }
+          cells.push({td,get:()=>s.value,exp:r.a[c.ans],kind:'sel'});
+        } else if(c.input){
+          const i=h('input',{type:'text',inputmode:'decimal','aria-label':c.label,placeholder:'…'});
+          td.appendChild(i);
+          if(r.prefill&&r.prefill[c.ans]!=null){ i.value=r.prefill[c.ans]; i.disabled=true; td.classList.add('prefill'); }
+          cells.push({td,get:()=>i.value,exp:r.a[c.ans],kind:'num'});
+        }
+        tr.appendChild(td);
+      });
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb); tw.appendChild(t); e.appendChild(tw);
+    check=()=>{
+      let err=0;
+      cells.forEach(c=>{
+        const v=c.get(); let ok;
+        if(c.kind==='sel'){ ok = Array.isArray(c.exp)? c.exp.includes(v) : v===c.exp; }
+        else { const n=parseNum(v); ok = !isNaN(n) && Math.abs(n-c.exp)<0.011; }
+        c.td.classList.remove('ok','ko');
+        if(showMarks && !c.td.classList.contains('prefill')) c.td.classList.add(ok?'ok':'ko');
+        if(!ok) err++;
+      });
+      return {ok:err===0, err};
+    };
+  }
+
+  else if(b.type==='qcm' || b.type==='multi'){
+    const box=h('div',{class:'opts'}); const name='q'+Math.random().toString(36).slice(2);
+    const items=b.options.map((o,i)=>{ const l=h('label',{class:'opt'}); const inp=h('input',{type:b.type==='qcm'?'radio':'checkbox',name}); l.appendChild(inp); l.appendChild(h('span',{},o)); box.appendChild(l); return {l,inp,i}; });
+    e.appendChild(box);
+    check=()=>{
+      let ok=true;
+      items.forEach(it=>{
+        const should = b.type==='qcm' ? it.i===b.answer : b.answers.includes(it.i);
+        const good = it.inp.checked===should;
+        if(!good) ok=false;
+        it.l.classList.remove('ok','ko');
+        if(showMarks && it.inp.checked) it.l.classList.add(should?'ok':'ko');
+      });
+      return {ok, err: ok?0:1};
+    };
+  }
+
+  else if(b.type==='order'){
+    const ul=h('ul',{class:'order'}); let arr=shuffle(b.items.map((t,i)=>({t,i})));
+    if(arr.every((x,k)=>x.i===k)) arr.reverse();
+    const draw=()=>{ ul.innerHTML=''; arr.forEach((x,k)=>{ const li=h('li'); li.innerHTML=`<span class="pos">${k+1}</span><span class="tx">${x.t}</span>`;
+      const up=h('button',{'aria-label':'Monter'},'↑'), dn=h('button',{'aria-label':'Descendre'},'↓');
+      up.onclick=()=>{ if(k>0){ [arr[k-1],arr[k]]=[arr[k],arr[k-1]]; draw(); } };
+      dn.onclick=()=>{ if(k<arr.length-1){ [arr[k+1],arr[k]]=[arr[k],arr[k+1]]; draw(); } };
+      li.appendChild(up); li.appendChild(dn); ul.appendChild(li); }); };
+    draw(); e.appendChild(ul);
+    e.appendChild(h('p',{style:'font-size:.88rem;color:var(--muted);margin:.6em 0 0'},'Utilise les flèches ↑ ↓ pour déplacer les étapes.'));
+    check=()=>{ let err=0; [...ul.children].forEach((li,k)=>{ const ok=arr[k].i===k; if(!ok) err++; li.classList.remove('ok','ko'); if(showMarks) li.classList.add(ok?'ok':'ko'); }); return {ok:err===0,err}; };
+  }
+
+  else if(b.type==='number'){
+    const row=h('div',{class:'numrow'}); const i=h('input',{type:'text',inputmode:'decimal',placeholder:'Ta réponse'}); row.appendChild(i); row.appendChild(h('b',{},b.unit||'')); e.appendChild(row);
+    check=()=>{ const n=parseNum(i.value); const ok=!isNaN(n)&&Math.abs(n-b.answer)<0.011; row.classList.remove('ok','ko'); if(showMarks||true) row.classList.add(ok?'ok':'ko'); return {ok,err:ok?0:1}; };
+  }
+
+  else if(b.type==='text'){
+    const ta=h('textarea',{rows:'4',placeholder:'Écris ta réponse ici…'}); e.appendChild(ta);
+    const tkey=`${current.m.id}-${level}-${num}`; if(S.texts[tkey]) ta.value=S.texts[tkey].a;
+    ta.addEventListener('input',()=>{ S.texts[tkey]={m:current.m.id,level,q:plain(b.q),a:ta.value,date:new Date().toLocaleDateString('fr-FR')}; save(); });
+    e.appendChild(h('p',{style:'font-size:.85rem;color:var(--muted);margin:.4em 0 0'},'📁 Ton texte est enregistré automatiquement et apparaîtra dans ton bilan.'));
+    check=()=>{ const t=ta.value.trim(); const words=t.split(/\s+/).filter(w=>/[a-zà-ÿ]{2,}/i.test(w)); const distinct=new Set(words.map(w=>w.toLowerCase())).size;
+      const ok=t.length>=(b.min||20) && distinct>=6; return {ok,err:ok?0:1,text:true}; };
+  }
+
+  if(b.hint && level!=='traineau'){
+    const hb=h('button',{class:'hintbtn',type:'button'},'💡 Coup de pouce'); const hd=h('div',{class:'hint'},b.hint);
+    hb.addEventListener('click',()=>{ if(!hd.classList.contains('open') && level==='etoile') current.hints++; hd.classList.toggle('open'); });
+    const hs=sayBtn(()=>'Coup de pouce : '+plain(b.hint),'say sm'); hs.style.marginRight='8px'; hd.prepend(hs);
+    e.appendChild(hb); e.appendChild(hd);
+  }
+  e.appendChild(fb);
+  return {el:e, auto:true, check:()=>{
+    const r=check(); fb.className='fb show '+(r.ok?'good':'bad');
+    if(r.text) fb.textContent = r.ok ? '✍️ Réponse enregistrée : ton enseignante la validera.' : 'Rédige de vraies phrases avec les mots du métier (au moins 6 mots différents).';
+    else if(r.ok) fb.textContent='✔ Bravo, c’est juste !';
+    else fb.textContent = (b.type==='table'||b.type==='order') ? `✘ Il reste ${r.err} erreur(s)${showMarks?' (en rouge)':''}.` : '✘ Ce n’est pas encore ça.' + (level==='traineau'?'':' Relis la consigne ou prends un coup de pouce.');
+    return r; }};
+}
+function blockSpeech(b,num){
+  let t=`Question ${num}. ${plain(b.q)} `;
+  if(b.type==='qcm') t+='Choisis une seule réponse. '+b.options.map((o,i)=>`Réponse ${i+1} : ${o}.`).join(' ');
+  if(b.type==='multi') t+='Tu peux cocher plusieurs réponses. '+b.options.map((o,i)=>`Réponse ${i+1} : ${o}.`).join(' ');
+  if(b.type==='order') t+='Range les étiquettes dans le bon ordre avec les flèches. Les étiquettes sont : '+b.items.map(x=>x+'.').join(' ');
+  if(b.type==='number') t+=`Écris un nombre${b.unit?' en '+b.unit:''}.`;
+  if(b.type==='text') t+='Écris ta réponse dans le cadre.';
+  if(b.type==='table'){ t+='Dans le tableau, appuie sur le haut-parleur de chaque ligne pour l’écouter. ';
+    b.cols.filter(c=>c.select).forEach(c=>{ t+=`Dans la colonne ${c.label}, tu choisis entre : ${c.select.join(', ')}. `; });
+    b.cols.filter(c=>c.input).forEach(c=>{ t+=`Dans la colonne ${c.label}, tu écris un nombre. `; }); }
+  return t;
+}
+
+function validate(){
+  if(current.paused) return;
+  current.tries++;
+  let allOk=true, wrong=0;
+  current.blocks.forEach(b=>{ if(b.auto){ const r=b.check(); if(!r.ok){ allOk=false; wrong++; } } });
+  const res=$('#mResult'); const m=current.m;
+  if(allOk){
+    const L=LEVELS[current.level]; const prev=S.missions[m.id]; const isNew=!prev||!prev.done;
+    if(!prev || !prev.done || L.stars>=prev.stars) S.missions[m.id]={done:true,level:current.level,stars:L.stars,hints:current.hints,tries:current.tries,date:new Date().toLocaleDateString('fr-FR')};
+    if(isNew) S.pendingAnim=m.id;
+    save(); renderPill(); renderTree($('#heroTree'),null,{bg:true});
+    const next=MISSIONS.find(x=>x.id===m.id+1);
+    res.innerHTML=`<div class="win"><div class="digit">${m.digit}</div><div class="tree" id="winTree"></div><div style="flex:1;min-width:220px"><h3>Mission réussie !</h3><p style="margin:0">Le chiffre n° ${m.id} du code est <b>${m.digit}</b>. Note-le bien.</p><p class="stars" style="color:#f3d27a;font-size:1.3rem;margin:.3em 0">${starStr(L.stars)} <span style="font-size:.9rem;color:#fff">niveau ${L.name}</span></p>${current.level!=='traineau'?'<p style="margin:0;font-size:.93rem">Défi : rejoue cette mission au niveau supérieur pour gagner plus d’étoiles.</p>':''}<div class="row" style="margin-top:12px">${next?`<button class="btn btn-gold" id="nextM">Mission suivante : ${next.day} décembre</button>`:'<button class="btn btn-gold" data-go="coffre">Ouvrir le coffre du traîneau</button>'}<button class="btn btn-ghost" style="color:#fff" data-go="missions">Calendrier</button></div></div></div>`;
+    if(next) $('#nextM').onclick=()=>openMission(next.id);
+    $('#winTree').outerHTML=`<div class="tree" id="winTree">${treeSVG(doneList(), isNew?m.id:null)}</div>`;
+    if(isNew) res.querySelector('.win p').insertAdjacentHTML('afterend',`<p style="margin:.3em 0 0;color:#f3d27a;font-weight:800">🎄 Nouvelle décoration : ${DECOS[m.id-1]} !</p>`);
+    res.querySelector('.win h3').append(' ', sayBtn(()=>`Mission réussie ! Le chiffre numéro ${m.id} du code est ${m.digit}. Note-le bien.`,'say sm light'));
+    const sw=$('#selfmWrap'); sw.innerHTML=''; sw.appendChild(renderSelfm(m));
+    const sb=h('button',{class:'btn btn-ghost',style:'color:#fff'},selfDone(S,m.id)?'🪞 Mon auto-évaluation':'🪞 Je m’auto-évalue'); sb.onclick=()=>$('#selfmCard').scrollIntoView({behavior:'smooth',block:'start'});
+    res.querySelector('.win .row').appendChild(sb);
+    if(!selfDone(S,m.id)) res.querySelector('.win .row').insertAdjacentHTML('beforebegin','<p style="margin:.6em 0 0;font-weight:800">🪞 Avant de continuer, fais ton auto-évaluation (en bas de la page).</p>');
+    burst();
+  } else {
+    res.innerHTML=`<div class="lose"><b>🧝 Farfadet ricane…</b> ${wrong} question(s) ne sont pas encore justes. Corrige ${current.level==='traineau'?'tes réponses':'les réponses en rouge'} et valide à nouveau.</div>`;
+    res.querySelector('.lose').prepend(sayBtn(()=>`Ce n’est pas encore réussi. ${wrong} question${wrong>1?'s ne sont':' n’est'} pas encore juste${wrong>1?'s':''}. ${current.level==='traineau'?'Corrige tes réponses':'Corrige les réponses en rouge'}, puis valide à nouveau.`,'say sm'));
+    res.querySelector('.lose .say').style.marginRight='8px';
+    if(current.level!=='traineau' && current.tries>=2){
+      let opened=0; $$('#mBody .hint').forEach(x=>{ if(!x.classList.contains('open')){ x.classList.add('open'); opened++; } });
+      if(opened) res.querySelector('.lose').insertAdjacentHTML('beforeend','<br>💡 Les coups de pouce sont maintenant ouverts pour t’aider.');
+    }
+    if(current.tries>=PAUSE_AFTER) startPause(res);
+  }
+  res.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function startPause(res){
+  current.paused=true; let t=PAUSE_SECONDS; const vb=$('#validateBtn'); vb.disabled=true;
+  const box=h('div',{class:'pause'}); res.appendChild(box);
+  const txt='Pause réflexion. Ne réponds pas au hasard : relis ou écoute chaque consigne, regarde les cases rouges et les coups de pouce.';
+  box.appendChild(sayBtn(txt,'say sm')); const sp=h('span',{style:'margin-left:8px'}); box.appendChild(sp);
+  const tick=()=>{ sp.innerHTML=`⏳ <b>Pause réflexion :</b> relis ou écoute chaque consigne avant de valider à nouveau (${t} s).`; vb.textContent=`Valider (${t} s)`; };
+  tick(); clearInterval(current.pauseT);
+  current.pauseT=setInterval(()=>{ t--; tick(); if(t<=0){ clearInterval(current.pauseT); current.paused=false; vb.disabled=false; vb.textContent='Valider ma mission'; sp.innerHTML='✅ Tu peux valider à nouveau.'; } },1000);
+}
+
+/* =========================================================
+   AUTO-ÉVALUATION PAR MISSION
+   ========================================================= */
+function selfDone(st,mid){ const r=st.selfm&&st.selfm[mid]&&st.selfm[mid].r; return !!r && MEVAL[mid].every((_,i)=>r[i]!=null); }
+function renderSelfm(m){
+  const e=h('div',{class:'selfm',id:'selfmCard'});
+  if(!S.selfm[m.id]) S.selfm[m.id]={r:{},diff:''};
+  const rec=S.selfm[m.id];
+  e.innerHTML=`<h3>🪞 Mon auto-évaluation · mission ${m.id}</h3><p style="margin:0;color:var(--muted)">Pour chaque phrase, choisis ce qui est vrai pour toi aujourd’hui. Sois honnête : cela aide ton enseignante à t’accompagner.</p>`;
+  e.querySelector('h3').appendChild(sayBtn(()=>'Mon auto-évaluation. Pour chaque phrase, choisis : je découvre, avec de l’aide, ou seul. '+MEVAL[m.id].map((x,i)=>`Phrase ${i+1} : ${x.t}`).join(' '),'say sm'));
+  MEVAL[m.id].forEach((ind,i)=>{
+    const row=h('div',{class:'ind'});
+    const tx=h('div',{class:'txt'}); tx.appendChild(sayBtn(ind.t,'say sm')); tx.appendChild(h('span',{class:'cc'},ind.c)); tx.appendChild(h('span',{},ind.t));
+    const rt=h('div',{class:'rate',role:'radiogroup','aria-label':ind.t});
+    RATES3.forEach(([em,lab],v)=>{ const l=h('label'); const inp=h('input',{type:'radio',name:`sm-${m.id}-${i}`,value:String(v)}); if(rec.r[i]===v) inp.checked=true;
+      inp.addEventListener('change',()=>{ rec.r[i]=v; rec.date=new Date().toLocaleDateString('fr-FR'); save(); upd(); });
+      l.appendChild(inp); l.appendChild(h('span',{class:'e'},em)); l.appendChild(h('span',{},lab)); rt.appendChild(l); });
+    row.appendChild(tx); row.appendChild(rt); e.appendChild(row);
+  });
+  const lab=h('label',{style:'display:block;font-weight:800;margin-top:12px'},'Ce qui était difficile pour moi :'); e.appendChild(lab);
+  const ta=h('textarea',{rows:'2',placeholder:'Ex. : calculer l’écart avec le signe moins…'}); ta.value=rec.diff||''; ta.addEventListener('input',()=>{ rec.diff=ta.value; save(); }); e.appendChild(ta);
+  const msg=h('div',{}); e.appendChild(msg);
+  const upd=()=>{ msg.innerHTML = selfDone(S,m.id) ? '<div class="done-msg">✅ Auto-évaluation enregistrée. Merci !</div>' : `<p style="margin:.6em 0 0;color:#9a7a12;font-weight:800">Il reste ${MEVAL[m.id].filter((_,i)=>rec.r[i]==null).length} phrase(s) à évaluer.</p>`; };
+  upd();
+  return e;
+}
+
+/* =========================================================
+   ÉTAPE TERRAIN
+   ========================================================= */
+function renderTerrain(m){
+  const T=TERRAIN[m.id]; const st=S.terrain[m.id];
+  const e=h('div',{class:'terrain',id:'terrainCard'});
+  e.innerHTML=`<h3><span style="font-size:1.6rem">${T.icon}</span> Étape terrain · plateau technique <span class="mode">${T.mode}</span></h3>
+   <p style="margin:0 0 4px"><b>${T.task}</b></p><p style="margin:0;color:var(--muted);font-size:.92rem">Fais cette étape pour de vrai, puis appelle ton enseignante : elle coche ce que tu as réussi et valide avec son code.</p>
+   <ul>${T.crit.map((c,i)=>`<li><label><input type="checkbox" data-c="${i}" ${st&&st.crit&&st.crit.includes(i)?'checked':''} ${st?'disabled':''}> <span>${c}</span></label></li>`).join('')}</ul>
+   <div class="tz"></div>`;
+  e.querySelector('h3').appendChild(sayBtn(()=>`Étape terrain, ${T.mode}. ${T.task} Ce que ton enseignante va vérifier : ${T.crit.join('. ')}.`,'say sm'));
+  const tz=e.querySelector('.tz');
+  if(st){ tz.innerHTML=`<div class="ok-badge">✅ Étape terrain validée par l’enseignante le ${st.date} (${st.crit.length} / ${T.crit.length} critères).</div>`; }
+  else {
+    tz.innerHTML=`<div class="row"><input type="password" placeholder="Code enseignante" style="max-width:200px" class="tcode" autocomplete="off"><button class="btn btn-sm btn-green tval">Valider l’étape terrain</button><span class="tmsg" style="font-weight:800"></span></div>`;
+    tz.querySelector('.tval').onclick=()=>{
+      const msg=tz.querySelector('.tmsg');
+      if(tz.querySelector('.tcode').value.trim().toUpperCase()!==TERRAIN_CODE){ msg.textContent='Code incorrect.'; msg.style.color='var(--red)'; return; }
+      const crit=[...e.querySelectorAll('[data-c]')].filter(x=>x.checked).map(x=>Number(x.dataset.c));
+      if(!crit.length){ msg.textContent='Coche au moins un critère réussi.'; msg.style.color='var(--red)'; return; }
+      S.terrain[m.id]={ok:true,date:new Date().toLocaleDateString('fr-FR'),crit}; save(); burst();
+      e.replaceWith(renderTerrain(m));
+    };
+  }
+  return e;
+}
+
+/* =========================================================
+   CARNET
+   ========================================================= */
+function renderVocab(){
+  const g=$('#vgrid'); g.innerHTML='';
+  VOCAB.forEach((v,i)=>{
+    const c=h('div',{class:'vcard'});
+    const f=h('button',{class:'flip','aria-label':'Retourner la carte '+v.w});
+    f.innerHTML=`<div class="f"><span style="font-size:1.8rem;line-height:1">${VICON[i]||''}</span><b>${v.w}</b><small>Clique pour retourner</small></div><div class="b"><span>${v.d}</span><em>🎄 ${v.ex}</em></div>`;
+    f.addEventListener('click',()=>f.classList.toggle('on'));
+    const lab=h('label',{class:'vcheck'}); const cb=h('input',{type:'checkbox'}); cb.checked=!!S.vocab[i];
+    cb.addEventListener('change',()=>{ S.vocab[i]=cb.checked; save(); vprog(); });
+    lab.appendChild(cb); lab.appendChild(h('span',{style:'flex:1'},'Je sais l’expliquer'));
+    lab.appendChild(sayBtn(()=>`${v.w}. ${v.d} Exemple : ${v.ex}`,'say sm'));
+    c.appendChild(f); c.appendChild(lab); g.appendChild(c);
+  });
+  vprog();
+}
+function vprog(){ const n=Object.values(S.vocab).filter(Boolean).length; $('#vcount').textContent=`${n} / ${VOCAB.length}`; $('#vprog').style.width=(100*n/VOCAB.length)+'%'; }
+
+/* =========================================================
+   TIME'S UP
+   ========================================================= */
+let tu={deck:[],i:0,score:0,t:90,timer:null};
+function tuShow(){ const c=tu.deck[tu.i]; if(!c){ tu.deck=shuffle(VOCAB); tu.i=0; return tuShow(); } $('#tuCard').innerHTML=`<div class="tu-word">${c.w}</div><div class="tu-forb">${c.f.map(x=>`<span>${x}</span>`).join('')}</div>`; }
+function tuTick(){ tu.t--; const m=Math.floor(tu.t/60), s=String(tu.t%60).padStart(2,'0'); $('#tuTimer').textContent=`${m}:${s}`; $('#tuTimer').classList.toggle('low',tu.t<=15); if(tu.t<=0) tuEnd(); }
+function tuEnd(){ clearInterval(tu.timer); tu.timer=null; $('#tuOk').disabled=$('#tuPass').disabled=true; $('#tuStart').disabled=false; $('#tuStart').textContent='Nouvelle manche';
+  $('#tuCard').innerHTML=`<div class="tu-word">Temps écoulé !</div><p style="color:#f3d27a;font-size:1.4rem;font-weight:800">${tu.score} point(s)</p>`;
+  S.tu.push(tu.score); save(); tuHist(); }
+function tuHist(){ $('#tuHist').innerHTML=S.tu.slice(-8).map((s,i)=>`<li>Manche : <b>${s}</b> point(s)</li>`).join('')||'<li style="list-style:none;color:var(--muted)">Aucune manche jouée.</li>'; }
+$('#tuStart').addEventListener('click',()=>{ tu.deck=shuffle(VOCAB); tu.i=0; tu.score=0; tu.t=90; $('#tuScore').textContent=0; $('#tuTimer').textContent='1:30'; $('#tuTimer').classList.remove('low'); tuShow(); $('#tuOk').disabled=$('#tuPass').disabled=false; $('#tuStart').disabled=true; tu.timer=setInterval(tuTick,1000); });
+$('#tuOk').addEventListener('click',()=>{ tu.score++; $('#tuScore').textContent=tu.score; tu.i++; tuShow(); });
+$('#tuPass').addEventListener('click',()=>{ tu.i++; tuShow(); });
+
+/* =========================================================
+   COFFRE
+   ========================================================= */
+function safeReady(){ const d=doneList().length===6; const a=MISSIONS.every(m=>selfDone(S,m.id)); const t=MISSIONS.every(m=>S.terrain[m.id]); return d && a && (REQUIRE_TERRAIN? t : true); }
+function renderSafe(){
+  const col=$('#collected'); col.innerHTML='';
+  const n=doneList().length, nt=MISSIONS.filter(m=>S.terrain[m.id]).length;
+  const ready=safeReady(); $('#safeBtn').disabled=!ready;
+  if(!ready){ $('#safeMsg').style.color='#f3d27a'; const na=MISSIONS.filter(m=>selfDone(S,m.id)).length; $('#safeMsg').textContent = n<6 ? `🔒 Le coffre reste fermé tant que les 6 missions ne sont pas réussies. Il t’en reste ${6-n}.` : na<6 ? `🪞 Il te reste ${6-na} auto-évaluation(s) à faire (en bas de chaque mission) pour ouvrir le coffre.` : `🔒 Il faut aussi faire valider les 6 étapes terrain. Il t’en reste ${6-nt}.`; }
+  else if(!S.safeOpen) $('#safeMsg').textContent='';
+  if(S.safeOpen && !$('#diploma')) renderDiploma();
+  MISSIONS.forEach(m=>{ const d=S.missions[m.id]; col.appendChild(h('span',{},`${m.day}/12 : ${d&&d.done?m.digit:'?'}`)); });
+  const sl=$('#slots'); if(!sl.children.length){
+    sl.dataset.v='1';
+    for(let i=0;i<6;i++){ const inp=h('input',{type:'text',inputmode:'numeric',maxlength:'1','aria-label':'Chiffre '+(i+1)});
+      inp.addEventListener('input',()=>{ inp.value=inp.value.replace(/\D/g,''); if(inp.value&&inp.nextElementSibling){ let n=inp.nextElementSibling; if(n.tagName!=='INPUT') n=n.nextElementSibling; n&&n.focus(); } });
+      inp.addEventListener('keydown',ev=>{ if(ev.key==='Backspace'&&!inp.value){ let p=inp.previousElementSibling; if(p&&p.tagName!=='INPUT') p=p.previousElementSibling; p&&p.focus(); } });
+      sl.appendChild(inp); if(i===1||i===3) sl.appendChild(h('span',{class:'sep'},'/')); }
+  }
+  $$('#slots input').forEach(i=>i.disabled=!ready);
+}
+$('#safeBtn').addEventListener('click',()=>{
+  if(!safeReady()) return;
+  const v=$$('#slots input').map(i=>i.value).join('');
+  const msg=$('#safeMsg');
+  if(v===CODE){
+    msg.textContent='🔓 Clac ! Le coffre s’ouvre…'; msg.style.color='#f3d27a'; S.safeOpen=true; save(); renderTree($('#heroTree'),null,{bg:true});
+    renderDiploma(); burst(); burst();
+  } else {
+    msg.textContent = v.length<6 ? 'Il manque des chiffres.' : '🔒 Le traîneau ne démarre pas… Vérifie les chiffres de tes missions.';
+    msg.style.color='#ffb4b0'; $('#slots').classList.remove('shake'); void $('#slots').offsetWidth; $('#slots').classList.add('shake');
+  }
+});
+function totalStars(){ return MISSIONS.reduce((s,m)=>s+((S.missions[m.id]&&S.missions[m.id].stars)||0),0); }
+function renderDiploma(){
+  const st=totalStars(); let rank='Lutin apprenti de la réserve'; if(st>=11) rank='Chef lutin de la logistique'; else if(st>=8) rank='Lutin confirmé de la réserve';
+  $('#safeWin').innerHTML=`<div class="diploma" id="diploma"><div id="dipTree" style="max-width:200px;margin:0 auto"></div><h2>Le code 24/12/26 a ouvert le coffre !</h2><p style="font-size:1.1rem">Les 87 commandes click &amp; collect sont prêtes pour le 24 décembre. Mme Guérin te remercie : grâce à toi, la réserve est fiable, sûre et bien organisée.</p><p style="margin-top:18px;color:var(--muted)">Diplôme décerné à</p><h2 style="color:var(--night)">${S.name||'Équipier(ère) renfort'}</h2><p>${S.team?S.team+' · ':''}<b>${rank}</b></p><p class="stars" style="font-size:1.6rem">${'★'.repeat(st)}<span style="color:var(--line)">${'★'.repeat(18-st)}</span></p><p>${st} étoiles sur 18 · 🧰 ${MISSIONS.filter(m=>S.terrain[m.id]).length} / 6 étapes terrain validées</p><p style="font-size:.85rem;color:var(--muted)">Le Comptoir des Lutins · Scénario 4 · 1CAP EPC</p></div><div class="row section noprint" style="justify-content:center"><button class="btn btn-green" id="printDip">Imprimer mon diplôme</button><button class="btn btn-gold" data-go="bilan">Remplir mon bilan</button></div>`;
+  $('#printDip').onclick=()=>printView('v-coffre');
+  renderTree($('#dipTree'),null,{nocap:true});
+}
+
+/* =========================================================
+   BILAN
+   ========================================================= */
+const SELF=['Je découvre','Je fais avec aide','Je fais seul(e)'];
+function selfmHtml(st){
+  const rows=[]; MISSIONS.forEach(m=>{ const rec=st.selfm&&st.selfm[m.id]; MEVAL[m.id].forEach((ind,i)=>{ const v=rec&&rec.r?rec.r[i]:null; rows.push(`<tr>${i===0?`<td rowspan="${MEVAL[m.id].length}"><b>M${m.id}</b> · ${m.title}${rec&&rec.diff?`<br><small style="color:var(--muted)">Difficulté : ${esc(rec.diff)}</small>`:''}</td>`:''}<td><span class="chip">${ind.c}</span></td><td>${ind.t}</td><td style="white-space:nowrap">${v!=null?RATES3[v][0]+' '+RATES3[v][1]:'—'}</td></tr>`); }); });
+  return `<div class="tablewrap"><table><thead><tr><th>Mission</th><th>Comp.</th><th>Je sais…</th><th>Mon choix</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
+}
+function esc(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function renderBilan(){
+  const c=$('#bilanCard');
+  const rows=MISSIONS.map(m=>{ const d=S.missions[m.id]; const t=S.terrain[m.id]; return `<tr><td><b>${m.day}/12</b> · ${m.title}</td><td>${m.comps.join(', ')}</td><td>${d&&d.done?LEVELS[d.level].icon+' '+LEVELS[d.level].name:'—'}</td><td class="stars">${d&&d.done?starStr(d.stars):'—'}</td><td>${d&&d.done&&d.tries?d.tries:'—'}</td><td>${d&&d.done&&d.level==='etoile'?d.hints:'—'}</td><td>${t?'✅ '+t.crit.length+'/'+TERRAIN[m.id].crit.length+' ('+t.date+')':'—'}</td></tr>`; }).join('');
+  const texts=Object.values(S.texts||{}).filter(x=>x.a&&x.a.trim()).sort((a,b)=>a.m-b.m);
+  const writings = texts.length ? texts.map(x=>{ const mm=MISSIONS.find(k=>k.id===x.m); return `<div class="writing"><b>Mission ${x.m} · ${mm.title}</b> <small style="color:var(--muted)">(${LEVELS[x.level].name}, ${x.date})</small><div style="margin-top:4px">${x.q}</div><div class="ans">${x.a.replace(/</g,'&lt;')}</div><small style="display:block;margin-top:6px">Validé par l’enseignante : ☐ oui ☐ à reprendre</small></div>`; }).join('') : '<p style="color:var(--muted)">Tes écrits apparaîtront ici quand tu feras une mission au niveau 🛷 Traîneau.</p>';
+  const selfRows=COMPS.map(cp=>`<tr><td><span class="chip"><i class="dot ${PAST[cp.p][0]}"></i>${cp.code}</span> ${cp.label}<br><small style="color:var(--muted)">Niveau visé (SGF) : ${PAST[cp.p][1]}</small></td><td>${SELF.map((s,i)=>`<label><input type="radio" name="se-${cp.code}" value="${i}" ${S.self[cp.code]==i?'checked':''}> ${s}</label>`).join('')}</td></tr>`).join('');
+  const nv=Object.values(S.vocab).filter(Boolean).length;
+  c.innerHTML=`<div class="row" style="justify-content:space-between"><div><h3 style="margin:0">${S.name||'Nom à compléter sur la page d’accueil'}</h3><span style="color:var(--muted)">${S.team||''} · Le Comptoir des Lutins · Scénario 4</span></div><div style="text-align:right"><b class="stars" style="font-size:1.3rem">${totalStars()} ★</b> / 18<br><small>Carnet du Pro : ${nv} / ${VOCAB.length} mots</small></div></div>
+  <h3 class="section">Mes missions</h3><div class="tablewrap"><table><thead><tr><th>Mission</th><th>Compétences</th><th>Niveau réussi</th><th>Étoiles</th><th>Essais</th><th>Coups de pouce</th><th>🧰 Terrain</th></tr></thead><tbody>${rows}</tbody></table></div>
+  <h3 class="section">Mes auto-évaluations par mission</h3>${selfmHtml(S)}
+  <h3 class="section">Mes écrits professionnels</h3>${writings}
+  <h3 class="section">Je me positionne</h3><div class="tablewrap"><table class="selfeval"><thead><tr><th>Compétence</th><th>Où j’en suis</th></tr></thead><tbody>${selfRows}</tbody></table></div>
+  <div class="grid2 section"><div><label style="font-weight:800" for="nGood">Ce que j’ai le mieux réussi</label><textarea id="nGood" rows="3">${S.notes.good||''}</textarea></div><div><label style="font-weight:800" for="nWork">Ce que je dois encore travailler</label><textarea id="nWork" rows="3">${S.notes.work||''}</textarea></div></div>
+  <p class="section" style="font-size:.9rem;color:var(--muted)">📁 Trace CPro : situation « Organiser la réserve et préparer les commandes pendant le rush de Noël ». Garde ce bilan : il contient tes écrits professionnels et la validation de tes étapes terrain.</p>`;
+  $$('#bilanCard input[type=radio]').forEach(r=>r.addEventListener('change',()=>{ S.self[r.name.slice(3)]=Number(r.value); save(); }));
+  $('#nGood').addEventListener('input',e=>{ S.notes.good=e.target.value; save(); });
+  $('#nWork').addEventListener('input',e=>{ S.notes.work=e.target.value; save(); });
+}
+$('#printBilan').addEventListener('click',()=>printView('v-bilan'));
+$('#resetAll').addEventListener('click',()=>{ if(confirm('Effacer toute la progression de '+(S.name||'cet élève')+' (missions, écrits, carnet, bilan) ?')){ S=Object.assign(blank(),{name:S.name,team:S.team}); save(); renderAll(); renderBilan(); } });
+function printView(id){ const v=$('#'+id); v.classList.add('printing'); window.print(); setTimeout(()=>v.classList.remove('printing'),500); }
+
+/* =========================================================
+   ESPACE ENSEIGNANT
+   ========================================================= */
+function corrBlock(b){
+  if(!b||b.type==='doc'||b.type==='rules') return '';
+  let a='';
+  if(b.type==='table'){ const interact=b.cols.filter(c=>c.ans); const first=b.cols.find(c=>c.key);
+    a='<ul class="corr">'+b.rows.map(r=>`<li><b>${r[first.key]}</b> → ${interact.map(c=>{ const v=r.a[c.ans]; return Array.isArray(v)?v.join(' ou '):String(v).replace('.',','); }).join(' · ')}</li>`).join('')+'</ul>'; }
+  else if(b.type==='qcm') a=`<p>→ ${b.options[b.answer]}</p>`;
+  else if(b.type==='multi') a='<ul class="corr">'+b.answers.map(i=>`<li>${b.options[i]}</li>`).join('')+'</ul>';
+  else if(b.type==='order') a='<ol class="corr">'+b.items.map(i=>`<li>${i}</li>`).join('')+'</ol>';
+  else if(b.type==='number') a=`<p>→ <b>${String(b.answer).replace('.',',')} ${b.unit||''}</b></p>`;
+  else if(b.type==='text') a=`<p><i>Réponse attendue (validation enseignante) :</i> ${b.expected||''}</p>`;
+  return `<div style="margin:8px 0"><b>${b.q}</b>${a}</div>`;
+}
+let profUnlocked=false;
+function renderProf(){
+  const c=$('#profCard');
+  c.innerHTML=`
+  <div class="row" style="justify-content:space-between;align-items:center;background:var(--cream);border-radius:12px;padding:12px 14px">
+    <div><b>🔐 Tableau de bord des compétences et corrigé</b><br><small style="color:var(--muted)">Saisissez le code enseignant pour accéder aux bilans des élèves et au corrigé.</small></div>
+    <div class="row"><input type="password" id="profCode" placeholder="Code enseignant" style="max-width:200px" autocomplete="off"><button class="btn btn-sm btn-green" id="profOk">Ouvrir</button></div>
+  </div>
+  <div id="dashZone"></div>
+  <h3 class="section">Informations sur le scénario</h3>
+  <p><b>Positionnement SGF :</b> S4 « Une réserve bien organisée » (1ʳᵉ année, après « Le stock sous contrôle »), contextualisé sur le rush de Noël. Durée conseillée : 3 à 4 semaines.</p>
+  <p><b>Objectif professionnel :</b> organiser le stockage et préparer les marchandises ou commandes de façon efficace, sûre et conforme aux procédures.</p>
+  <h3>Compétences et niveaux visés</h3>
+  <div class="tablewrap"><table><thead><tr><th>Compétence</th><th>Niveau SGF</th><th>Missions</th><th>Savoirs associés</th></tr></thead><tbody>
+  ${COMPS.map(cp=>`<tr><td><b>${cp.code}</b> ${cp.label}</td><td><span class="chip"><i class="dot ${PAST[cp.p][0]}"></i>${PAST[cp.p][1]}</span></td><td>${MISSIONS.filter(m=>m.comps.includes(cp.code)).map(m=>'M'+m.id).join(', ')}</td><td style="font-size:.88rem">${cp.savoirs}</td></tr>`).join('')}
+  </tbody></table></div>
+  <p style="font-size:.9rem;color:var(--muted)">La fiche de cadrage S4 cible B1.3, B1.4 et B2.5. La matrice SGF et l’onglet « Détail scénarios » ajoutent B1.1 (entraînement) et B1.2 (autonomisation) : ils sont intégrés dans les missions 1 et 6.</p>
+  <h3>Déroulé proposé</h3>
+  <ol>
+    <li><b>Séance 1 :</b> lancement (accueil, badge, vidéo ou photos de réserve en période de fêtes), Carnet du Pro, mission 1 + étape terrain (réception d’un vrai colis).</li>
+    <li><b>Séance 2 :</b> mission 2, idéalement complétée par une mise en situation dans l’espace réserve du plateau technique.</li>
+    <li><b>Séance 3 :</b> mission 3 avec préparation réelle d’une commande sur le plateau technique.</li>
+    <li><b>Séance 4 :</b> missions 4 et 5 (possibilité d’inventaire réel en binôme sur le plateau).</li>
+    <li><b>Séance 5 :</b> mission 6, Time's Up en équipes.</li>
+    <li><b>Séance 6 :</b> coffre, bilan imprimé, sélection d’une trace pour le CPro.</li>
+  </ol>
+  <h3>Différenciation</h3>
+  <ul>
+    <li><b>Pour tous :</b> consigne « En mots simples », pictogrammes dans les menus et sur les cartes du Carnet, lecture audio de toutes les consignes.</li>
+    <li><b>❄️ Flocon :</b> règles et méthodes affichées, exemples préremplis, coups de pouce illimités, erreurs signalées case par case.</li>
+    <li><b>⭐ Étoile :</b> questions supplémentaires (décision, FIFO, calcul), coups de pouce sur demande et comptés dans le bilan.</li>
+    <li><b>🛷 Traîneau :</b> tâche complète, calculs de valeurs, production écrite (réserves, consigne, analyse d’écart), aucune aide, seul le nombre d’erreurs est indiqué.</li>
+    <li>L’élève peut changer de niveau à chaque mission et rejouer une mission réussie à un niveau supérieur : les étoiles valorisent la prise de risque.</li>
+  </ul>
+  <h3>Étapes terrain (plateau technique)</h3>
+  <p>Chaque mission se termine par une étape à réaliser pour de vrai. Vous cochez les critères réussis sur le poste de l’élève et vous validez avec le code <b>${TERRAIN_CODE}</b>. Les étapes 4 (équipe de 3) et 5 (binôme) sont collectives.</p>
+  <ul>${MISSIONS.map(m=>`<li><b>M${m.id} · ${TERRAIN[m.id].mode} :</b> ${TERRAIN[m.id].task}</li>`).join('')}</ul>
+  <p style="font-size:.9rem;color:var(--muted)">Réglage : par défaut, le coffre s’ouvre dès que les 6 missions sont réussies. Pour exiger aussi les 6 étapes terrain, remplacez <code>REQUIRE_TERRAIN = false</code> par <code>true</code> dans le fichier. Les codes se modifient au même endroit (PROF_CODE, TERRAIN_CODE).</p>
+  <h3>Contre les réponses au hasard</h3>
+  <ul><li>Le nombre d’essais de chaque mission apparaît dans le bilan.</li><li>Au 2ᵉ essai raté (niveaux Flocon et Étoile), les coups de pouce s’ouvrent.</li><li>À partir du ${PAUSE_AFTER}ᵉ essai raté, une pause réflexion de ${PAUSE_SECONDS} s bloque la validation.</li><li>Les écrits du niveau Traîneau doivent contenir au moins 6 mots différents ; ils sont conservés et imprimés dans le bilan pour votre validation.</li></ul>
+  <h3>Profils et sauvegardes</h3>
+  <p>Chaque élève tape son nom une fois : plusieurs élèves peuvent utiliser le même ordinateur sans mélanger leur progression. Pour changer de poste, l’élève télécharge sa sauvegarde (fichier .json) et la recharge sur le nouvel ordinateur.</p>
+  <h3>Traces CPro</h3>
+  <p>Réserves rédigées (M1), consigne de réserve (M2), analyse d’écart d’inventaire (M5), calcul de réassort (M6), bilan imprimé. La situation « réceptionner, ranger et préparer pendant le rush de Noël » peut alimenter une première fiche descriptive.</p>
+  <div id="corrige"></div>`;
+
+  const unlock=()=>{ profUnlocked=true; renderDash();
+    $('#corrige').innerHTML=`<h3 class="section">Corrigé</h3><p><b>Code du coffre : ${CODE.slice(0,2)}/${CODE.slice(2,4)}/${CODE.slice(4)}</b> (24 décembre 2026)</p>`+
+      MISSIONS.map(m=>`<details><summary>Mission ${m.id} · ${m.day}/12 · ${m.title} → chiffre ${m.digit}</summary>${Object.entries(m.levels).map(([k,bl])=>`<h3 style="font-size:1rem;margin-top:14px">${LEVELS[k].icon} ${LEVELS[k].name}</h3>${bl.map(corrBlock).join('')}`).join('')}</details>`).join('');
+  };
+  $('#profOk').onclick=()=>{ if($('#profCode').value.trim().toUpperCase()!==PROF_CODE){ $('#dashZone').innerHTML='<p style="color:var(--red);font-weight:800;margin-top:10px">Code incorrect.</p>'; return; } unlock(); };
+  $('#profCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#profOk').click(); });
+  if(profUnlocked) unlock();
+}
+
+/* =========================================================
+   TABLEAU DE BORD ENSEIGNANT
+   ========================================================= */
+function profEval(){ try{ return JSON.parse(lsGet(KEY+'-prof-eval')||'{}'); }catch(e){ return {}; } }
+function saveProfEval(o){ lsSet(KEY+'-prof-eval',JSON.stringify(o)); }
+function imports(){ try{ return JSON.parse(lsGet(KEY+'-prof-imports')||'[]'); }catch(e){ return []; } }
+function allStudents(){
+  const map={};
+  const add=(o,src)=>{ if(!o||!o.name) return; const st=Object.assign(blank(),o); st._src=src; const k=slug(st.name); if(!map[k] || (st.updated||0)>=(map[k].updated||0)) map[k]=st; };
+  profiles().forEach(n=>{ try{ add(JSON.parse(lsGet(KEY+'-p-'+slug(n))||'null'),'cet ordinateur'); }catch(e){} });
+  imports().forEach(o=>add(o,'sauvegarde importée'));
+  return Object.values(map).sort((a,b)=>a.name.localeCompare(b.name,'fr'));
+}
+function mComps(mid){ return [...new Set(MEVAL[mid].map(x=>x.c))]; }
+function selfAvg(st,mid,comp){ const rec=st.selfm&&st.selfm[mid]; if(!rec||!rec.r) return null; const v=MEVAL[mid].map((x,i)=>x.c===comp?rec.r[i]:undefined).filter(x=>x!=null); if(!v.length) return null; return v.reduce((a,b)=>a+b,0)/v.length; }
+function selfLabel(a){ if(a==null) return '—'; const i=Math.round(a); return RATES3[i][0]+' '+RATES3[i][1]; }
+function propose(st,mid){
+  const d=st.missions[mid]; if(!d||!d.done) return 0;
+  let v={flocon:2,etoile:3,traineau:4}[d.level];
+  if((d.tries||1)>=PAUSE_AFTER) v--;
+  const t=st.terrain&&st.terrain[mid]; const full=t && t.crit.length===TERRAIN[mid].crit.length;
+  if(t && t.crit.length/TERRAIN[mid].crit.length<0.5) v--;
+  if(v===4 && !full) v=3;
+  return Math.max(1,Math.min(4,v));
+}
+function finalPos(st,mid,comp){ const pe=profEval()[slug(st.name)]; const t=pe&&pe.pos&&pe.pos[mid+'|'+comp]; return t!=null&&t!=='' ? Number(t) : propose(st,mid); }
+function compGlobal(st,comp){ const v=MISSIONS.filter(m=>mComps(m.id).includes(comp)).map(m=>finalPos(st,m.id,comp)).filter(x=>x>0); if(!v.length) return 0; return Math.round(v.reduce((a,b)=>a+b,0)/v.length); }
+const posChip=v=>`<span class="pos pos${v}">${POS[v]}</span>`;
+
+function renderDash(){
+  const z=$('#dashZone'); const list=allStudents(); const nLocal=profiles().length, nImp=imports().length;
+  z.innerHTML=`<h3 class="section">📊 Tableau de bord des compétences</h3>
+  <div class="row" style="background:var(--info-soft);border-radius:12px;padding:12px 14px">
+    <span><b>${list.length}</b> élève(s) · ${nLocal} sur cet ordinateur · ${nImp} sauvegarde(s) importée(s)</span>
+    <label class="btn btn-sm btn-gold filebtn">📂 Importer des sauvegardes élèves<input type="file" accept=".json,application/json" multiple id="dImp"></label>
+    ${nImp?'<button class="btn btn-sm btn-ghost" id="dClr" style="color:var(--red)">Vider les imports</button>':''}
+    ${list.length?'<button class="btn btn-sm btn-green" id="dCsv">⬇️ Export Excel (CSV)</button><button class="btn btn-sm btn-ghost" id="dAll" style="color:var(--info)">🖨 Imprimer toutes les fiches</button>':''}
+  </div>
+  <p style="font-size:.88rem;color:var(--muted)">Récupérer les résultats : sur un ordinateur partagé, les élèves qui y ont travaillé apparaissent seuls. Sinon, chaque élève clique sur « 💾 Télécharger ma sauvegarde » (page d’accueil) et vous dépose le fichier (ENT, clé USB) ; importez-les ici, plusieurs à la fois.</p>
+  ${list.length?`<div class="tablewrap dash"><table><thead><tr><th>Élève</th>${MISSIONS.map(m=>`<th>M${m.id}</th>`).join('')}${COMPS.map(c=>`<th>${c.code}</th>`).join('')}<th></th></tr></thead><tbody>
+  ${list.map((st,i)=>`<tr><td><b>${esc(st.name)}</b><br><small style="color:var(--muted)">${esc(st.team||'')}</small></td>${MISSIONS.map(m=>{ const d=st.missions[m.id]; return `<td style="white-space:nowrap">${d&&d.done?LEVELS[d.level].icon+(st.terrain&&st.terrain[m.id]?' 🧰':'')+(selfDone(st,m.id)?' 🪞':''):'<span style="color:#b9b2a2">—</span>'}</td>`; }).join('')}${COMPS.map(c=>`<td>${posChip(compGlobal(st,c.code))}</td>`).join('')}<td><button class="btn btn-sm btn-green" data-fiche="${i}">Fiche CPro</button></td></tr>`).join('')}
+  </tbody></table></div>
+  <p style="font-size:.85rem;color:var(--muted)">❄️ ⭐ 🛷 niveau réussi · 🧰 étape terrain validée · 🪞 auto-évaluation faite. Les positionnements par compétence sont la moyenne des missions concernées (vos corrections comprises).</p>
+  <details><summary>Comment est calculé le positionnement proposé ?</summary><ul style="font-size:.92rem">
+   <li>Mission réussie au niveau Flocon → <b>Partiellement maîtrisé</b> ; Étoile → <b>Maîtrisé</b> ; Traîneau → <b>Bien maîtrisé</b>.</li>
+   <li>Un cran de moins si la mission a demandé ${PAUSE_AFTER} essais ou plus, ou si moins de la moitié des critères terrain sont réussis.</li>
+   <li>« Bien maîtrisé » n’est proposé que si l’étape terrain est validée avec tous ses critères.</li>
+   <li>L’auto-évaluation de l’élève est affichée à côté, mais n’entre pas dans le calcul. C’est une proposition : vous gardez la main dans chaque fiche.</li></ul></details>`
+  : '<p class="section">Aucun élève pour l’instant.</p>'}
+  <div id="ficheZone"></div>`;
+  $('#dImp').addEventListener('change',e=>{ const files=[...e.target.files]; let ok=0, bad=0, done=0; const arr=imports();
+    files.forEach(f=>{ const r=new FileReader(); r.onload=()=>{ try{ const o=JSON.parse(r.result); const d=o.data||o; if(!d.name||typeof d.missions!=='object') throw 0; const i=arr.findIndex(x=>slug(x.name)===slug(d.name)); if(i>=0) arr[i]=d; else arr.push(d); ok++; }catch(err){ bad++; } done++; if(done===files.length){ lsSet(KEY+'-prof-imports',JSON.stringify(arr)); renderDash(); alert(`${ok} sauvegarde(s) importée(s)`+(bad?`, ${bad} fichier(s) ignoré(s)`:'')+'.'); } }; r.readAsText(f); }); });
+  if($('#dClr')) $('#dClr').onclick=()=>{ if(confirm('Retirer toutes les sauvegardes importées de ce tableau de bord ?')){ lsDel(KEY+'-prof-imports'); renderDash(); } };
+  if($('#dCsv')) $('#dCsv').onclick=()=>exportCSV(list);
+  if($('#dAll')) $('#dAll').onclick=()=>printFiches(list);
+  $$('[data-fiche]').forEach(b=>b.onclick=()=>{ showFiche(list[Number(b.dataset.fiche)]); $('#ficheZone').scrollIntoView({behavior:'smooth'}); });
+}
+
+function ficheHTML(st, editable){
+  const k=slug(st.name); const pe=profEval()[k]||{pos:{},com:{},cpro:{}};
+  const dates=MISSIONS.map(m=>st.missions[m.id]&&st.missions[m.id].date).filter(Boolean);
+  const synth=COMPS.map(c=>{ const ms=MISSIONS.filter(m=>mComps(m.id).includes(c.code)); const sa=ms.map(m=>selfAvg(st,m.id,c.code)).filter(x=>x!=null); const avg=sa.length?sa.reduce((a,b)=>a+b,0)/sa.length:null;
+    return `<tr><td><b>${c.code}</b> ${c.label}</td><td><span class="chip"><i class="dot ${PAST[c.p][0]}"></i>${PAST[c.p][1]}</span></td><td>${ms.map(m=>'M'+m.id).join(', ')}</td><td>${selfLabel(avg)}</td><td>${posChip(compGlobal(st,c.code))}</td></tr>`; }).join('');
+  const missions=MISSIONS.map(m=>{
+    const d=st.missions[m.id]; const t=st.terrain&&st.terrain[m.id]; const rec=st.selfm&&st.selfm[m.id];
+    const txts=Object.values(st.texts||{}).filter(x=>x.m===m.id&&x.a&&x.a.trim());
+    const comps=mComps(m.id).map(c=>{ const pr=propose(st,m.id); const cur=pe.pos&&pe.pos[m.id+'|'+c];
+      const sel = editable ? `<select data-pos="${m.id}|${c}"><option value="">Proposé : ${POS[pr]}</option>${POS.map((p,i)=>i?`<option value="${i}" ${String(cur)===String(i)?'selected':''}>${p}</option>`:'').join('')}</select>` : posChip(finalPos(st,m.id,c));
+      return `<tr><td><b>${c}</b></td><td>${selfLabel(selfAvg(st,m.id,c))}</td><td>${posChip(pr)}</td><td>${sel}</td></tr>`; }).join('');
+    return `<div class="mbox"><b style="font-family:Fraunces,serif;font-size:1.1rem">Mission ${m.id} · ${m.title}</b> <span class="mini">(${m.day} décembre)</span>
+      <p class="mini" style="margin:.3em 0">${d&&d.done?`Réussie le ${d.date||'—'} · niveau ${LEVELS[d.level].icon} ${LEVELS[d.level].name} · ${starStr(d.stars)} · ${d.tries||'?'} essai(s)${d.level==='etoile'?' · '+(d.hints||0)+' coup(s) de pouce':''}`:'<b style="color:var(--red)">Mission non réussie</b>'}</p>
+      <div class="grid2" style="gap:12px">
+        <div><b>🧰 Étape terrain</b> <span class="mini">${TERRAIN[m.id].mode}${t?' · validée le '+t.date:' · non validée'}</span><ul style="margin:.3em 0;padding-left:18px;font-size:.9rem">${TERRAIN[m.id].crit.map((c,i)=>`<li class="${t&&t.crit.includes(i)?'crit-ok':'crit-no'}">${t&&t.crit.includes(i)?'✔':'○'} ${c}</li>`).join('')}</ul></div>
+        <div><b>🪞 Auto-évaluation</b><ul style="margin:.3em 0;padding-left:18px;font-size:.9rem">${MEVAL[m.id].map((x,i)=>`<li>${x.t} → <b>${rec&&rec.r&&rec.r[i]!=null?RATES3[rec.r[i]][0]+' '+RATES3[rec.r[i]][1]:'—'}</b></li>`).join('')}</ul>${rec&&rec.diff?`<p class="mini">Difficulté exprimée : « ${esc(rec.diff)} »</p>`:''}</div>
+      </div>
+      ${txts.length?`<b>✍️ Écrits professionnels</b>${txts.map(x=>`<div class="writing"><div class="mini">${esc(x.q)}</div><div class="ans">${esc(x.a)}</div></div>`).join('')}`:''}
+      <div class="tablewrap" style="margin-top:8px"><table style="min-width:520px"><thead><tr><th>Compétence</th><th>Auto-évaluation élève</th><th>Proposé</th><th>Positionnement enseignant</th></tr></thead><tbody>${comps}</tbody></table></div>
+      ${editable?`<label style="display:block;font-weight:800;margin-top:8px">Commentaire</label><textarea rows="2" data-com="${m.id}">${esc((pe.com||{})[m.id]||'')}</textarea>
+      <label style="display:flex;gap:8px;align-items:center;margin-top:8px;font-weight:700"><input type="checkbox" data-cpro="${m.id}" ${(pe.cpro||{})[m.id]?'checked':''} style="width:18px;height:18px"> Situation retenue pour une fiche descriptive CPro</label>`
+      : `${(pe.com||{})[m.id]?`<p><b>Commentaire :</b> ${esc(pe.com[m.id])}</p>`:''}${(pe.cpro||{})[m.id]?'<p><b>📁 Situation retenue pour une fiche descriptive CPro</b></p>':''}`}
+    </div>`; }).join('');
+  return `<div class="row" style="justify-content:space-between"><div><h2 style="margin:0">Bilan de compétences · ${esc(st.name)}</h2><span class="mini">${esc(st.team||'')} · Le Comptoir des Lutins · Scénario 4 (S4 « Une réserve bien organisée ») · 1CAP EPC</span></div>
+    <div class="mini" style="text-align:right">${dates.length?'Période : '+dates[0]+' → '+dates[dates.length-1]:''}<br>${MISSIONS.filter(m=>st.missions[m.id]&&st.missions[m.id].done).length}/6 missions · ${MISSIONS.filter(m=>st.terrain&&st.terrain[m.id]).length}/6 terrain · ${MISSIONS.filter(m=>selfDone(st,m.id)).length}/6 auto-évaluations</div></div>
+    <h3>Synthèse par compétence</h3>
+    <div class="tablewrap"><table><thead><tr><th>Compétence</th><th>Niveau visé (SGF)</th><th>Missions</th><th>Auto-évaluation élève</th><th>Positionnement</th></tr></thead><tbody>${synth}</tbody></table></div>
+    ${st.notes&&(st.notes.good||st.notes.work)?`<p class="mini" style="margin-top:8px"><b>L’élève a le mieux réussi :</b> ${esc(st.notes.good||'—')}<br><b>L’élève doit retravailler :</b> ${esc(st.notes.work||'—')}</p>`:''}
+    <h3>Détail par mission</h3>${missions}
+    <p class="mini" style="margin-top:16px">Positionnement proposé à partir du niveau réussi, du nombre d’essais et des critères terrain, puis ajusté par l’enseignante. Signature de l’enseignante : ……………………………</p>`;
+}
+function showFiche(st){
+  const z=$('#ficheZone'); const k=slug(st.name);
+  z.innerHTML=`<div class="fiche" id="ficheBox">${ficheHTML(st,true)}</div><div class="row section"><button class="btn btn-green" id="fPrint">🖨 Imprimer / PDF cette fiche</button><button class="btn btn-ghost" id="fClose">Fermer</button></div>`;
+  const upd=(fn)=>{ const all=profEval(); all[k]=all[k]||{pos:{},com:{},cpro:{}}; fn(all[k]); saveProfEval(all); };
+  $$('#ficheBox [data-pos]').forEach(sel=>sel.addEventListener('change',()=>{ upd(o=>{ if(sel.value==='') delete o.pos[sel.dataset.pos]; else o.pos[sel.dataset.pos]=Number(sel.value); }); const y=window.scrollY; renderDash(); showFiche(st); window.scrollTo(0,y); }));
+  $$('#ficheBox [data-com]').forEach(ta=>ta.addEventListener('input',()=>upd(o=>{ o.com[ta.dataset.com]=ta.value; })));
+  $$('#ficheBox [data-cpro]').forEach(cb=>cb.addEventListener('change',()=>upd(o=>{ o.cpro[cb.dataset.cpro]=cb.checked; })));
+  $('#fPrint').onclick=()=>printFiches([st]);
+  $('#fClose').onclick=()=>{ z.innerHTML=''; };
+}
+function printFiches(list){
+  const v=$('#v-print'); v.innerHTML=list.map((st,i)=>`<div class="fiche" style="${i?'page-break-before:always;':''}">${ficheHTML(st,false)}</div>`).join('');
+  printView('v-print');
+}
+function exportCSV(list){
+  const head=['Élève','Équipe','Mission','Titre de la mission','Compétence','Intitulé','Niveau visé SGF','Mission réussie','Date','Niveau joué','Étoiles','Essais','Coups de pouce','Terrain validé','Critères terrain réussis','Détail critères terrain','Auto-évaluation élève','Détail auto-évaluation','Difficulté exprimée','Positionnement proposé','Positionnement enseignant','Positionnement retenu','Commentaire enseignant','Retenue pour fiche CPro','Écrits professionnels'];
+  const rows=[head]; const PE=profEval();
+  list.forEach(st=>{ const pe=PE[slug(st.name)]||{pos:{},com:{},cpro:{}};
+    MISSIONS.forEach(m=>{ const d=st.missions[m.id]; const t=st.terrain&&st.terrain[m.id]; const rec=st.selfm&&st.selfm[m.id];
+      const txt=Object.values(st.texts||{}).filter(x=>x.m===m.id&&x.a).map(x=>x.a.trim()).join(' | ');
+      mComps(m.id).forEach(c=>{ const cp=COMPS.find(x=>x.code===c); const pr=propose(st,m.id); const tv=pe.pos&&pe.pos[m.id+'|'+c];
+        rows.push([st.name,st.team||'','M'+m.id,m.title,c,cp.label,PAST[cp.p][1],d&&d.done?'oui':'non',d&&d.date||'',d&&d.done?LEVELS[d.level].name:'',d&&d.done?d.stars:'',d&&d.done?(d.tries||''):'',d&&d.done&&d.level==='etoile'?(d.hints||0):'',t?'oui':'non',t?t.crit.length+'/'+TERRAIN[m.id].crit.length:'',t?TERRAIN[m.id].crit.map((x,i)=>(t.crit.includes(i)?'[OK] ':'[--] ')+x).join(' / '):'',
+          selfLabel(selfAvg(st,m.id,c)).replace(/^\S+\s/,''), MEVAL[m.id].map((x,i)=>x.c===c?x.t+' : '+(rec&&rec.r&&rec.r[i]!=null?RATES3[rec.r[i]][1]:'—'):null).filter(Boolean).join(' / '), rec&&rec.diff||'',
+          POS[pr], tv!=null?POS[tv]:'', POS[finalPos(st,m.id,c)], (pe.com||{})[m.id]||'', (pe.cpro||{})[m.id]?'oui':'', txt]); }); });
+    COMPS.forEach(c=>rows.push([st.name,st.team||'','SYNTHÈSE','',c.code,c.label,PAST[c.p][1],'','','','','','','','','','','','','','',POS[compGlobal(st,c.code)],'','','']));
+  });
+  const csv='\ufeff'+rows.map(r=>r.map(v=>{ v=String(v==null?'':v).replace(/\r?\n/g,' '); return /[;"]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }).join(';')).join('\r\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})); a.download='bilan_competences_S4_comptoir_lutins.csv'; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },800);
+}
+
+/* =========================================================
+   BADGE / PROFILS / SAUVEGARDE
+   ========================================================= */
+function renderBadge(){
+  const c=$('#badge'); const ps=profiles();
+  if(!S.name){
+    c.innerHTML=`<div class="row" style="justify-content:space-between"><h3 style="margin:0">Ton badge d'équipier renfort</h3><button class="say" data-say="#badgeTxt" aria-label="Écouter">🔊</button></div>
+      <p id="badgeTxt" style="margin:.4em 0 .2em">Écris ton prénom et ton nom, puis appuie sur « C'est moi, je commence ».</p>
+      <label for="pName">Prénom et nom</label><input type="text" id="pName" placeholder="Ex. : Lina Martin" autocomplete="off">
+      <label for="pTeam">Équipe ou binôme (facultatif)</label><input type="text" id="pTeam" placeholder="Ex. : Équipe Renne" autocomplete="off">
+      <div class="row" style="margin-top:12px"><button class="btn btn-red" id="pStart">C'est moi, je commence</button>
+      <label class="btn btn-ghost btn-sm filebtn" style="color:var(--info)">📂 Reprendre une sauvegarde<input type="file" accept=".json,application/json" id="pImport"></label></div>
+      ${ps.length?`<p style="margin:14px 0 0;font-weight:800">Déjà venu(e) sur cet ordinateur ? Clique sur ton nom :</p><div class="plist">${ps.map(n=>`<button class="btn btn-sm btn-gold" data-prof="${n.replace(/"/g,'&quot;')}">${n}</button>`).join('')}</div>`:''}`;
+    $('#pStart').onclick=()=>{ const n=$('#pName').value.trim(); if(n.length<2){ $('#pName').classList.remove('need'); void $('#pName').offsetWidth; $('#pName').classList.add('need'); $('#pName').focus(); return; }
+      if(profiles().includes(n)) loadProfile(n); else { S=blank(); S.name=n; }
+      if($('#pTeam').value.trim()) S.team=$('#pTeam').value.trim(); save(); renderAll(); };
+    $$('[data-prof]').forEach(b=>b.onclick=()=>{ loadProfile(b.dataset.prof); renderAll(); });
+  } else {
+    c.innerHTML=`<h3>Ton badge d'équipier renfort</h3>
+      <div class="badge-on"><span style="font-size:2rem">🪪</span><div><small style="color:var(--muted)">Équipier(ère) renfort</small><br><b>${S.name}</b></div></div>
+      <label for="pTeam">Équipe ou binôme (facultatif)</label><input type="text" id="pTeam" placeholder="Ex. : Équipe Renne" autocomplete="off" value="${(S.team||'').replace(/"/g,'&quot;')}">
+      <div class="row" style="margin-top:12px">
+        <button class="btn btn-sm btn-green" id="pSave">💾 Télécharger ma sauvegarde</button>
+        <label class="btn btn-sm btn-ghost filebtn" style="color:var(--info)">📂 Reprendre une sauvegarde<input type="file" accept=".json,application/json" id="pImport"></label>
+        <button class="btn btn-sm btn-ghost" id="pOut" style="color:var(--red)">Changer d'élève</button></div>
+      <p style="color:var(--muted);font-size:.88rem;margin-top:10px">Ta progression est enregistrée sur cet ordinateur. Tu changes de poste ? Télécharge ta sauvegarde et ouvre-la sur le nouvel ordinateur (clé USB, ENT…).</p>`;
+    $('#pTeam').addEventListener('input',e=>{ S.team=e.target.value; save(); });
+    $('#pSave').onclick=downloadSave;
+    $('#pOut').onclick=()=>{ save(); stopSpeak(); S=blank(); lsDel(KEY+'-current'); renderAll(); };
+  }
+  $('#pImport').addEventListener('change',e=>{ const f=e.target.files[0]; if(f) importSave(f); });
+}
+function downloadSave(){
+  const blob=new Blob([JSON.stringify({app:'comptoir-lutins-s4',version:4,data:S})],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='sauvegarde_lutins_'+slug(S.name)+'.json';
+  document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },800);
+}
+function importSave(file){
+  const r=new FileReader();
+  r.onload=()=>{ try{ const o=JSON.parse(r.result); const d=o.data||o; if(!d||!d.name||typeof d.missions!=='object') throw 0;
+      S=Object.assign(blank(),d); save(); renderAll(); alert('Sauvegarde de '+S.name+' chargée !'); }
+    catch(e){ alert('Ce fichier n’est pas une sauvegarde du Comptoir des Lutins.'); } };
+  r.readAsText(file);
+}
+function renderAll(){ renderPill(); renderBadge(); renderTree($('#heroTree'),null,{bg:true}); tuHist(); $('#safeWin').innerHTML=''; const sl=$('#slots'); if(sl) sl.innerHTML=''; $('#safeMsg').textContent=''; }
+function needBadge(){ go('accueil'); const c=$('#badge'); c.scrollIntoView({block:'center'}); c.classList.remove('need'); void c.offsetWidth; c.classList.add('need'); const i=$('#pName'); if(i) i.focus(); speak('Écris d’abord ton prénom et ton nom sur ton badge.', null); }
+
+/* =========================================================
+   NEIGE + CONFETTIS
+   ========================================================= */
+const cv=$('#snow'), ctx=cv.getContext('2d'); let flakes=[], parts=[];
+const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function size(){ cv.width=innerWidth; cv.height=innerHeight; }
+size(); addEventListener('resize',size);
+for(let i=0;i<55;i++) flakes.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:1+Math.random()*2.6,s:.3+Math.random()*.8,d:Math.random()*6});
+function burst(){ if(reduce) return; const cols=['#b3202a','#c99a1c','#1f7a4f','#ffffff','#2a5d8a']; for(let i=0;i<120;i++) parts.push({x:innerWidth/2,y:innerHeight/2.5,vx:(Math.random()-.5)*14,vy:-Math.random()*12-3,c:cols[i%5],l:120,w:4+Math.random()*5}); }
+function loop(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(!reduce){ ctx.fillStyle='rgba(160,185,200,.55)'; flakes.forEach(f=>{ f.y+=f.s; f.d+=.01; f.x+=Math.sin(f.d)*.3; if(f.y>cv.height){ f.y=-5; f.x=Math.random()*cv.width; } ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,7); ctx.fill(); }); }
+  parts=parts.filter(p=>p.l>0); parts.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.vy+=.35; p.l--; ctx.fillStyle=p.c; ctx.fillRect(p.x,p.y,p.w,p.w*.6); });
+  requestAnimationFrame(loop);
+}
+loop();
+
+renderAll();
+</script>
+</body>
+</html>
