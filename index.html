@@ -207,6 +207,19 @@ td.prefill select,td.prefill input{background:#eef2f4;border-style:dashed}
 .tu-forb span{background:var(--red);padding:4px 10px;border-radius:999px;font-weight:800;font-size:.86rem}
 .timer{font-family:"Fraunces",serif;font-size:3rem;font-weight:800;color:var(--night)}
 .timer.low{color:var(--red)}
+.tu-setup{display:grid;gap:12px;margin-bottom:18px}
+.seg{display:inline-flex;flex-wrap:wrap;gap:6px}
+.seg button{border:2px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font-weight:800;color:var(--night)}
+.seg button.on{border-color:var(--red);background:var(--red);color:#fff}
+.seg button:disabled{opacity:.5;cursor:not-allowed}
+.tu-rule{background:var(--gold-soft);border-radius:10px;padding:10px 14px;font-weight:700;color:#6b5208;margin:0}
+.tu-lvl{background:rgba(255,255,255,.12);border-radius:999px;padding:4px 12px;font-weight:800;font-size:.9rem;margin-bottom:10px;color:#f3d27a}
+.tu-ic{font-size:3.2rem;line-height:1;margin-bottom:6px}
+.tu-mime{margin-top:12px;background:var(--pine2);border-radius:999px;padding:4px 12px;font-weight:800;font-size:.9rem}
+.tu-pick{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:14px}
+.tu-pick button{border:0;border-radius:16px;padding:14px 18px;font-weight:800;font-size:1.05rem;background:#fff;color:var(--night);min-width:120px}
+.tu-pick button small{display:block;font-weight:700;color:var(--muted);font-size:.8rem}
+.tu-hist li{margin:.25em 0}
 
 /* ---------- Coffre ---------- */
 .safe{background:radial-gradient(120% 120% at 50% 0%,#244e66,var(--night));color:#fff;border-radius:24px;padding:30px 20px;text-align:center;box-shadow:var(--shadow)}
@@ -443,19 +456,25 @@ footer button{background:none;border:0;color:#f3d27a;font-weight:800;padding:0}
 <!-- ================= TIME'S UP ================= -->
 <section class="view" id="v-timesup">
   <h2>Time's Up du Pro</h2>
-  <p><button class="say sm" data-say="#tuTxt" aria-label="Écouter">🔊</button> <span id="tuTxt">Fais deviner le mot à ton équipe en 1 min 30. Les mots en rouge sont interdits, comme le mot lui-même et les mots de sa famille. 1 point par mot trouvé.</span></p>
+  <p><button class="say sm" data-say="#tuTxt" aria-label="Écouter">🔊</button> <span id="tuTxt">Fais deviner le mot à ton équipe. Les mots en rouge sont interdits, comme le mot lui-même et les mots de sa famille. Choisis ton niveau : Flocon, Étoile ou Traîneau. Plus le niveau est difficile, plus un mot trouvé rapporte de points.</span></p>
+  <div class="card tu-setup" id="tuSetup">
+    <div class="row"><b style="min-width:70px">Mode</b><div class="seg" id="tuMode"><button data-m="team" class="on">Une équipe, un niveau</button><button data-m="mix">Équipes mixtes</button></div></div>
+    <div class="row" id="tuLvlRow"><b style="min-width:70px">Niveau</b><div class="seg" id="tuLvl"><button data-l="flocon" class="on">❄️ Flocon</button><button data-l="etoile">⭐ Étoile</button><button data-l="traineau">🛷 Traîneau</button></div></div>
+    <div class="row"><label for="tuTeam" style="min-width:70px"><b>Équipe</b></label><input id="tuTeam" type="text" placeholder="Ex. : Équipe Renne" style="max-width:260px" autocomplete="off"></div>
+    <div class="row" style="gap:8px;align-items:flex-start"><button class="say sm" id="tuRuleSay" aria-label="Écouter la règle">🔊</button><p class="tu-rule" id="tuRule" style="flex:1"></p></div>
+  </div>
   <div class="tu">
-    <div class="tu-card" id="tuCard"><div class="tu-word">Prêt(e) ?</div><p style="color:#cfdde5">Appuie sur « Démarrer » quand ton équipe est prête.</p></div>
+    <div class="tu-card" id="tuCard"><div class="tu-word">Prêt(e) ?</div><p style="color:#cfdde5">Choisis le mode et le niveau, puis appuie sur « Démarrer ».</p></div>
     <div class="card">
-      <div class="timer" id="tuTimer">1:30</div>
-      <p style="margin:0 0 12px">Score : <b id="tuScore">0</b> point(s)</p>
+      <div class="timer" id="tuTimer">2:00</div>
+      <p style="margin:0 0 12px">Score : <b id="tuScore">0</b> point(s) · <span id="tuWords">0</span> mot(s)</p>
       <div class="row">
         <button class="btn btn-green" id="tuStart">Démarrer</button>
         <button class="btn btn-gold" id="tuOk" disabled>Trouvé !</button>
         <button class="btn btn-ghost" id="tuPass" disabled>Passer</button>
       </div>
-      <h3 style="margin-top:20px">Scores des manches</h3>
-      <ol id="tuHist" style="padding-left:20px;margin:0"></ol>
+      <div class="row" style="justify-content:space-between;margin-top:20px"><h3 style="margin:0">Scores des manches</h3><button class="btn btn-sm btn-ghost" id="tuClear" style="color:var(--red)">Effacer</button></div>
+      <ol id="tuHist" class="tu-hist" style="padding-left:20px;margin:8px 0 0"></ol>
     </div>
   </div>
 </section>
@@ -1070,7 +1089,7 @@ function renderBlock(b, level, num){
   const showMarks = level!=='traineau';
   if(b.type==='doc'||b.type==='rules'){
     const e=h('div',{class:'block '+(b.type==='rules'?'rules':'doc')},`<div class="doc-title">${b.title||'Document'}</div>${b.html}`);
-    if(b.type==='rules'){ const dt=e.querySelector('.doc-title'); dt.style.cssText='display:flex;gap:8px;align-items:center'; dt.prepend(sayBtn(()=>(b.title||'')+'. '+plain(b.html),'say sm')); }
+    /* audio réservé aux consignes et au contexte */
     return {el:e, auto:false, check:()=>({ok:true})};
   }
   const e=h('div',{class:'block'});
@@ -1088,7 +1107,7 @@ function renderBlock(b, level, num){
       const tr=h('tr');
       b.cols.forEach(c=>{
         const td=h('td');
-        if(c.key){ td.innerHTML=r[c.key]; if(c===b.cols.find(x=>x.key)){ const w=h('div',{class:'row-say'}); w.appendChild(sayBtn(()=>`Ligne ${ri+1}. `+b.cols.filter(x=>x.key).map(x=>`${x.label} : ${r[x.key]}`).join('. ')+'.','say sm')); w.appendChild(h('span',String(r[c.key]).length<12?{class:'nw'}:{},r[c.key])); td.innerHTML=''; td.appendChild(w); } }
+        if(c.key){ td.innerHTML=r[c.key]; if(c===b.cols.find(x=>x.key) && String(r[c.key]).length<12) td.style.whiteSpace='nowrap'; }
         else if(c.select){
           const s=h('select',{'aria-label':c.label}); s.innerHTML='<option value="">— choisir —</option>'+c.select.map(o=>`<option value="${o}">${ICONS[o]?ICONS[o]+' ':''}${o}</option>`).join('');
           td.appendChild(s);
@@ -1166,7 +1185,7 @@ function renderBlock(b, level, num){
   if(b.hint && level!=='traineau'){
     const hb=h('button',{class:'hintbtn',type:'button'},'💡 Coup de pouce'); const hd=h('div',{class:'hint'},b.hint);
     hb.addEventListener('click',()=>{ if(!hd.classList.contains('open') && level==='etoile') current.hints++; hd.classList.toggle('open'); });
-    const hs=sayBtn(()=>'Coup de pouce : '+plain(b.hint),'say sm'); hs.style.marginRight='8px'; hd.prepend(hs);
+
     e.appendChild(hb); e.appendChild(hd);
   }
   e.appendChild(fb);
@@ -1179,14 +1198,13 @@ function renderBlock(b, level, num){
 }
 function blockSpeech(b,num){
   let t=`Question ${num}. ${plain(b.q)} `;
-  if(b.type==='qcm') t+='Choisis une seule réponse. '+b.options.map((o,i)=>`Réponse ${i+1} : ${o}.`).join(' ');
-  if(b.type==='multi') t+='Tu peux cocher plusieurs réponses. '+b.options.map((o,i)=>`Réponse ${i+1} : ${o}.`).join(' ');
-  if(b.type==='order') t+='Range les étiquettes dans le bon ordre avec les flèches. Les étiquettes sont : '+b.items.map(x=>x+'.').join(' ');
+  if(b.type==='qcm') t+='Coche une seule réponse.';
+  if(b.type==='multi') t+='Tu peux cocher plusieurs réponses.';
+  if(b.type==='order') t+='Range les étiquettes dans le bon ordre avec les flèches.';
   if(b.type==='number') t+=`Écris un nombre${b.unit?' en '+b.unit:''}.`;
   if(b.type==='text') t+='Écris ta réponse dans le cadre.';
-  if(b.type==='table'){ t+='Dans le tableau, appuie sur le haut-parleur de chaque ligne pour l’écouter. ';
-    b.cols.filter(c=>c.select).forEach(c=>{ t+=`Dans la colonne ${c.label}, tu choisis entre : ${c.select.join(', ')}. `; });
-    b.cols.filter(c=>c.input).forEach(c=>{ t+=`Dans la colonne ${c.label}, tu écris un nombre. `; }); }
+  if(b.type==='table'){ b.cols.filter(c=>c.select).forEach(c=>{ t+=`Dans la colonne ${c.label}, choisis une réponse dans la liste. `; });
+    b.cols.filter(c=>c.input).forEach(c=>{ t+=`Dans la colonne ${c.label}, écris un nombre. `; }); }
   return t;
 }
 
@@ -1206,7 +1224,7 @@ function validate(){
     if(next) $('#nextM').onclick=()=>openMission(next.id);
     $('#winTree').outerHTML=`<div class="tree" id="winTree">${treeSVG(doneList(), isNew?m.id:null)}</div>`;
     if(isNew) res.querySelector('.win p').insertAdjacentHTML('afterend',`<p style="margin:.3em 0 0;color:#f3d27a;font-weight:800">🎄 Nouvelle décoration : ${DECOS[m.id-1]} !</p>`);
-    res.querySelector('.win h3').append(' ', sayBtn(()=>`Mission réussie ! Le chiffre numéro ${m.id} du code est ${m.digit}. Note-le bien.`,'say sm light'));
+
     const sw=$('#selfmWrap'); sw.innerHTML=''; sw.appendChild(renderSelfm(m));
     const sb=h('button',{class:'btn btn-ghost',style:'color:#fff'},selfDone(S,m.id)?'🪞 Mon auto-évaluation':'🪞 Je m’auto-évalue'); sb.onclick=()=>$('#selfmCard').scrollIntoView({behavior:'smooth',block:'start'});
     res.querySelector('.win .row').appendChild(sb);
@@ -1214,8 +1232,8 @@ function validate(){
     burst();
   } else {
     res.innerHTML=`<div class="lose"><b>🧝 Farfadet ricane…</b> ${wrong} question(s) ne sont pas encore justes. Corrige ${current.level==='traineau'?'tes réponses':'les réponses en rouge'} et valide à nouveau.</div>`;
-    res.querySelector('.lose').prepend(sayBtn(()=>`Ce n’est pas encore réussi. ${wrong} question${wrong>1?'s ne sont':' n’est'} pas encore juste${wrong>1?'s':''}. ${current.level==='traineau'?'Corrige tes réponses':'Corrige les réponses en rouge'}, puis valide à nouveau.`,'say sm'));
-    res.querySelector('.lose .say').style.marginRight='8px';
+
+
     if(current.level!=='traineau' && current.tries>=2){
       let opened=0; $$('#mBody .hint').forEach(x=>{ if(!x.classList.contains('open')){ x.classList.add('open'); opened++; } });
       if(opened) res.querySelector('.lose').insertAdjacentHTML('beforeend','<br>💡 Les coups de pouce sont maintenant ouverts pour t’aider.');
@@ -1229,7 +1247,7 @@ function startPause(res){
   current.paused=true; let t=PAUSE_SECONDS; const vb=$('#validateBtn'); vb.disabled=true;
   const box=h('div',{class:'pause'}); res.appendChild(box);
   const txt='Pause réflexion. Ne réponds pas au hasard : relis ou écoute chaque consigne, regarde les cases rouges et les coups de pouce.';
-  box.appendChild(sayBtn(txt,'say sm')); const sp=h('span',{style:'margin-left:8px'}); box.appendChild(sp);
+  const sp=h('span',{}); box.appendChild(sp);
   const tick=()=>{ sp.innerHTML=`⏳ <b>Pause réflexion :</b> relis ou écoute chaque consigne avant de valider à nouveau (${t} s).`; vb.textContent=`Valider (${t} s)`; };
   tick(); clearInterval(current.pauseT);
   current.pauseT=setInterval(()=>{ t--; tick(); if(t<=0){ clearInterval(current.pauseT); current.paused=false; vb.disabled=false; vb.textContent='Valider ma mission'; sp.innerHTML='✅ Tu peux valider à nouveau.'; } },1000);
@@ -1247,7 +1265,7 @@ function renderSelfm(m){
   e.querySelector('h3').appendChild(sayBtn(()=>'Mon auto-évaluation. Pour chaque phrase, choisis : je découvre, avec de l’aide, ou seul. '+MEVAL[m.id].map((x,i)=>`Phrase ${i+1} : ${x.t}`).join(' '),'say sm'));
   MEVAL[m.id].forEach((ind,i)=>{
     const row=h('div',{class:'ind'});
-    const tx=h('div',{class:'txt'}); tx.appendChild(sayBtn(ind.t,'say sm')); tx.appendChild(h('span',{class:'cc'},ind.c)); tx.appendChild(h('span',{},ind.t));
+    const tx=h('div',{class:'txt'}); tx.appendChild(h('span',{class:'cc'},ind.c)); tx.appendChild(h('span',{},ind.t));
     const rt=h('div',{class:'rate',role:'radiogroup','aria-label':ind.t});
     RATES3.forEach(([em,lab],v)=>{ const l=h('label'); const inp=h('input',{type:'radio',name:`sm-${m.id}-${i}`,value:String(v)}); if(rec.r[i]===v) inp.checked=true;
       inp.addEventListener('change',()=>{ rec.r[i]=v; rec.date=new Date().toLocaleDateString('fr-FR'); save(); upd(); });
@@ -1302,7 +1320,7 @@ function renderVocab(){
     const lab=h('label',{class:'vcheck'}); const cb=h('input',{type:'checkbox'}); cb.checked=!!S.vocab[i];
     cb.addEventListener('change',()=>{ S.vocab[i]=cb.checked; save(); vprog(); });
     lab.appendChild(cb); lab.appendChild(h('span',{style:'flex:1'},'Je sais l’expliquer'));
-    lab.appendChild(sayBtn(()=>`${v.w}. ${v.d} Exemple : ${v.ex}`,'say sm'));
+
     c.appendChild(f); c.appendChild(lab); g.appendChild(c);
   });
   vprog();
@@ -1312,16 +1330,65 @@ function vprog(){ const n=Object.values(S.vocab).filter(Boolean).length; $('#vco
 /* =========================================================
    TIME'S UP
    ========================================================= */
-let tu={deck:[],i:0,score:0,t:90,timer:null};
-function tuShow(){ const c=tu.deck[tu.i]; if(!c){ tu.deck=shuffle(VOCAB); tu.i=0; return tuShow(); } $('#tuCard').innerHTML=`<div class="tu-word">${c.w}</div><div class="tu-forb">${c.f.map(x=>`<span>${x}</span>`).join('')}</div>`; }
-function tuTick(){ tu.t--; const m=Math.floor(tu.t/60), s=String(tu.t%60).padStart(2,'0'); $('#tuTimer').textContent=`${m}:${s}`; $('#tuTimer').classList.toggle('low',tu.t<=15); if(tu.t<=0) tuEnd(); }
-function tuEnd(){ clearInterval(tu.timer); tu.timer=null; $('#tuOk').disabled=$('#tuPass').disabled=true; $('#tuStart').disabled=false; $('#tuStart').textContent='Nouvelle manche';
-  $('#tuCard').innerHTML=`<div class="tu-word">Temps écoulé !</div><p style="color:#f3d27a;font-size:1.4rem;font-weight:800">${tu.score} point(s)</p>`;
-  S.tu.push(tu.score); save(); tuHist(); }
-function tuHist(){ $('#tuHist').innerHTML=S.tu.slice(-8).map((s,i)=>`<li>Manche : <b>${s}</b> point(s)</li>`).join('')||'<li style="list-style:none;color:var(--muted)">Aucune manche jouée.</li>'; }
-$('#tuStart').addEventListener('click',()=>{ tu.deck=shuffle(VOCAB); tu.i=0; tu.score=0; tu.t=90; $('#tuScore').textContent=0; $('#tuTimer').textContent='1:30'; $('#tuTimer').classList.remove('low'); tuShow(); $('#tuOk').disabled=$('#tuPass').disabled=false; $('#tuStart').disabled=true; tu.timer=setInterval(tuTick,1000); });
-$('#tuOk').addEventListener('click',()=>{ tu.score++; $('#tuScore').textContent=tu.score; tu.i++; tuShow(); });
-$('#tuPass').addEventListener('click',()=>{ tu.i++; tuShow(); });
+const TU_CARDS={
+ flocon:[{w:'Carton',ic:'📦',f:['boîte']},{w:'Colis',ic:'📮',f:['paquet']},{w:'Étiquette',ic:'🏷️',f:['prix']},{w:'Camion',ic:'🚚',f:['livraison']},{w:'Rayon',ic:'🛒',f:['étagère']},{w:'Caisse',ic:'💶',f:['payer']},{w:'Palette',ic:'🪵',f:['bois']},{w:'Cadeau',ic:'🎁',f:['Noël']},{w:'Client',ic:'🧍',f:['acheter']},{w:'Sapin',ic:'🎄',f:['arbre']},{w:'Chocolat',ic:'🍫',f:['manger']},{w:'Guirlande',ic:'✨',f:['lumière']},{w:'Escabeau',ic:'🪜',f:['monter']},{w:'Ciseaux',ic:'✂️',f:['couper']},{w:'Ticket de caisse',ic:'🧾',f:['papier']},{w:'Sac',ic:'🛍️',f:['porter']},{w:'Livreur',ic:'🚴',f:['camion']},{w:'Réserve',ic:'🏬',f:['ranger']},{w:'Gants',ic:'🧤',f:['mains']},{w:'Peluche',ic:'🧸',f:['jouet']}],
+ etoile:[...VOCAB.filter(v=>['Bon de commande','Bon de livraison (BL)','Réserves','Avarie','Manquant','Excédent','FIFO','DLC / DDM','Transpalette','Bon de préparation','Click & collect','Prélèvement (picking)','Rupture de stock'].includes(v.w)).map(v=>({w:v.w,f:v.f})),
+   {w:'Code-barres',f:['scanner','lignes','bip']},{w:'Antivol',f:['voler','alarme','sonner']},{w:'Fournisseur',f:['vendre','commander','magasin']},{w:'Emballage',f:['emballer','papier','protéger']},{w:'Zone de retrait',f:['retirer','commande','client']}],
+ traineau:[{w:'Démarque connue',f:['perte','connaître','casse','enregistrer']},{w:'Démarque inconnue',f:['perte','vol','inconnu','inventaire']},{w:'Inventaire tournant',f:['compter','stock','tourner','zone']},{w:'Écart d’inventaire',f:['différence','compter','stock','théorique']},{w:'Stock d’alerte',f:['alerte','minimum','commander','seuil']},{w:'Stock maximum',f:['maximum','plus','stock','quantité']},{w:'Cadencier',f:['tableau','suivi','commande','ventes']},{w:'Adressage',f:['adresse','allée','emplacement','niveau']},{w:'Erreur administrative',f:['erreur','saisie','logiciel','étiquette']},{w:'Vol interne',f:['voler','salarié','employé','démarque']},{w:'Réassort',f:['commander','stock','remettre','rayon']},{w:'Stock théorique',f:['logiciel','ordinateur','stock','compter']},{w:'Traçabilité',f:['suivre','lot','origine','trace']},{w:'Taux de démarque',f:['pourcentage','perte','calcul','démarque']}]
+};
+const TU_LV={
+ flocon:{pts:1,t:120,lab:'❄️ Flocon',rule:'❄️ Flocon : mots du magasin · 1 mot interdit · 🤸 mime autorisé (tu peux aussi montrer un objet) · 2 minutes · 1 point par mot.'},
+ etoile:{pts:2,t:90,lab:'⭐ Étoile',rule:'⭐ Étoile : mots du métier · 3 mots interdits · pas de mime · 1 min 30 · 2 points par mot.'},
+ traineau:{pts:3,t:60,lab:'🛷 Traîneau',rule:'🛷 Traîneau : notions d’expert · 4 mots interdits · pas de mime · 1 minute · 3 points par mot.'}
+};
+const TU_MIX_T=90;
+let tu={mode:'team',level:'flocon',decks:{},cur:null,score:0,words:0,t:120,timer:null};
+const fmtT=t=>`${Math.floor(t/60)}:${String(t%60).padStart(2,'0')}`;
+function tuRuleText(){ return tu.mode==='mix' ? 'Équipes mixtes : avant chaque carte, le joueur qui fait deviner choisit son niveau. L’équipe a 1 min 30. ❄️ Flocon = 1 point (mime autorisé), ⭐ Étoile = 2 points, 🛷 Traîneau = 3 points.' : TU_LV[tu.level].rule; }
+function tuSetupUI(){
+  $$('#tuMode button').forEach(b=>b.classList.toggle('on',b.dataset.m===tu.mode));
+  $$('#tuLvl button').forEach(b=>b.classList.toggle('on',b.dataset.l===tu.level));
+  $('#tuLvlRow').style.display = tu.mode==='mix'?'none':'';
+  $('#tuRule').textContent=tuRuleText();
+  if(!tu.timer){ $('#tuTimer').textContent=fmtT(tu.mode==='mix'?TU_MIX_T:TU_LV[tu.level].t); $('#tuTimer').classList.remove('low'); }
+}
+function tuLock(on){ $$('#tuMode button, #tuLvl button').forEach(b=>b.disabled=on); $('#tuTeam').disabled=on; }
+function tuDeck(l){ if(!tu.decks[l]||!tu.decks[l].length) tu.decks[l]=shuffle(TU_CARDS[l]); return tu.decks[l].pop(); }
+function tuPicker(){
+  tu.cur=null; $('#tuOk').disabled=$('#tuPass').disabled=true;
+  $('#tuCard').innerHTML=`<div class="tu-word" style="font-size:1.5rem">À toi de faire deviner !</div><p style="color:#cfdde5;margin:.4em 0 0">Choisis le niveau de ta carte (ne regarde pas avant).</p><div class="tu-pick">${Object.entries(TU_LV).map(([k,L])=>`<button data-tl="${k}">${L.lab}<small>+${L.pts} point${L.pts>1?'s':''}</small></button>`).join('')}</div>`;
+  $$('[data-tl]').forEach(b=>b.onclick=()=>tuDraw(b.dataset.tl));
+}
+function tuDraw(l){
+  const c=tuDeck(l); tu.cur=Object.assign({l},c); const L=TU_LV[l];
+  $('#tuCard').innerHTML=`<div class="tu-lvl">${L.lab} · +${L.pts} pt${L.pts>1?'s':''}</div>${c.ic?`<div class="tu-ic">${c.ic}</div>`:''}<div class="tu-word">${c.w}</div><div class="tu-forb">${c.f.map(x=>`<span>${x}</span>`).join('')}</div>${l==='flocon'?'<div class="tu-mime">🤸 Mime autorisé</div>':''}`;
+  $('#tuOk').disabled=$('#tuPass').disabled=false;
+}
+function tuNext(){ if(!tu.timer) return; tu.mode==='mix' ? tuPicker() : tuDraw(tu.level); }
+function tuTick(){ tu.t--; $('#tuTimer').textContent=fmtT(Math.max(0,tu.t)); $('#tuTimer').classList.toggle('low',tu.t<=15); if(tu.t<=0) tuEnd(); }
+function tuHistGet(){ try{ return JSON.parse(lsGet(KEY+'-tu')||'[]'); }catch(e){ return []; } }
+function tuEnd(){
+  clearInterval(tu.timer); tu.timer=null; tu.cur=null; tuLock(false);
+  $('#tuOk').disabled=$('#tuPass').disabled=true; $('#tuStart').disabled=false; $('#tuStart').textContent='Nouvelle manche';
+  $('#tuCard').innerHTML=`<div class="tu-word">Temps écoulé !</div><p style="color:#f3d27a;font-size:1.4rem;font-weight:800;margin:.4em 0 0">${tu.score} point(s)</p><p style="color:#cfdde5;margin:.2em 0 0">${tu.words} mot(s) trouvé(s)</p>`;
+  const hist=tuHistGet(); hist.push({team:$('#tuTeam').value.trim()||'Équipe',mode:tu.mode,level:tu.level,points:tu.score,words:tu.words,date:new Date().toLocaleDateString('fr-FR')}); lsSet(KEY+'-tu',JSON.stringify(hist.slice(-30))); tuHist(); burst();
+}
+function tuHist(){
+  const hist=tuHistGet().slice(-10).reverse();
+  $('#tuHist').innerHTML=hist.map(x=>`<li><b>${esc(x.team)}</b> · ${x.mode==='mix'?'🔀 Mixte':TU_LV[x.level].lab} · ${x.words} mot(s) · <b>${x.points} pt(s)</b></li>`).join('')||'<li style="list-style:none;color:var(--muted)">Aucune manche jouée.</li>';
+}
+$$('#tuMode button').forEach(b=>b.onclick=()=>{ tu.mode=b.dataset.m; tuSetupUI(); });
+$$('#tuLvl button').forEach(b=>b.onclick=()=>{ tu.level=b.dataset.l; tuSetupUI(); });
+$('#tuRuleSay').addEventListener('click',e=>speak(tuRuleText(),e.currentTarget));
+$('#tuStart').addEventListener('click',()=>{
+  tu.score=0; tu.words=0; tu.t= tu.mode==='mix'?TU_MIX_T:TU_LV[tu.level].t; $('#tuScore').textContent=0; $('#tuWords').textContent=0;
+  $('#tuTimer').textContent=fmtT(tu.t); $('#tuTimer').classList.remove('low'); $('#tuStart').disabled=true; tuLock(true);
+  tu.timer=setInterval(tuTick,1000); tuNext();
+});
+$('#tuOk').addEventListener('click',()=>{ if(!tu.cur) return; tu.score+=TU_LV[tu.cur.l].pts; tu.words++; $('#tuScore').textContent=tu.score; $('#tuWords').textContent=tu.words; tuNext(); });
+$('#tuPass').addEventListener('click',()=>{ if(!tu.cur) return; tuNext(); });
+$('#tuClear').addEventListener('click',()=>{ if(confirm('Effacer les scores des manches ?')){ lsDel(KEY+'-tu'); tuHist(); } });
+tuSetupUI();
 
 /* =========================================================
    COFFRE
@@ -1438,10 +1505,11 @@ function renderProf(){
   </ol>
   <h3>Différenciation</h3>
   <ul>
-    <li><b>Pour tous :</b> consigne « En mots simples », pictogrammes dans les menus et sur les cartes du Carnet, lecture audio de toutes les consignes.</li>
+    <li><b>Pour tous :</b> consigne « En mots simples », pictogrammes dans les menus et sur les cartes du Carnet. Audio à la demande (bouton 🔊, jamais automatique) sur le contexte et les consignes uniquement.</li>
     <li><b>❄️ Flocon :</b> règles et méthodes affichées, exemples préremplis, coups de pouce illimités, erreurs signalées case par case.</li>
     <li><b>⭐ Étoile :</b> questions supplémentaires (décision, FIFO, calcul), coups de pouce sur demande et comptés dans le bilan.</li>
     <li><b>🛷 Traîneau :</b> tâche complète, calculs de valeurs, production écrite (réserves, consigne, analyse d’écart), aucune aide, seul le nombre d’erreurs est indiqué.</li>
+    <li><b>Time's Up :</b> 3 paquets de cartes (❄️ 20 mots du magasin avec pictogramme, 1 mot interdit, mime autorisé, 2 min · ⭐ 18 mots du métier, 3 mots interdits, 1 min 30 · 🛷 14 notions d’expert, 4 mots interdits, 1 min) ; 1, 2 ou 3 points par mot ; mode « équipes mixtes » où chaque joueur choisit le niveau de sa carte.</li>
     <li>L’élève peut changer de niveau à chaque mission et rejouer une mission réussie à un niveau supérieur : les étoiles valorisent la prise de risque.</li>
   </ul>
   <h3>Étapes terrain (plateau technique)</h3>
@@ -1629,7 +1697,7 @@ function importSave(file){
   r.readAsText(file);
 }
 function renderAll(){ renderPill(); renderBadge(); renderTree($('#heroTree'),null,{bg:true}); tuHist(); $('#safeWin').innerHTML=''; const sl=$('#slots'); if(sl) sl.innerHTML=''; $('#safeMsg').textContent=''; }
-function needBadge(){ go('accueil'); const c=$('#badge'); c.scrollIntoView({block:'center'}); c.classList.remove('need'); void c.offsetWidth; c.classList.add('need'); const i=$('#pName'); if(i) i.focus(); speak('Écris d’abord ton prénom et ton nom sur ton badge.', null); }
+function needBadge(){ go('accueil'); const c=$('#badge'); c.scrollIntoView({block:'center'}); c.classList.remove('need'); void c.offsetWidth; c.classList.add('need'); const i=$('#pName'); if(i) i.focus(); }
 
 /* =========================================================
    NEIGE + CONFETTIS
