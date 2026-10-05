@@ -267,6 +267,47 @@ summary{font-weight:800;cursor:pointer}
 .pause{background:var(--gold-soft);border:2px solid var(--gold);color:#6b5208;border-radius:12px;padding:10px 14px;margin-top:10px;font-weight:700}
 .door .tbadge{font-size:.8rem;font-weight:800;margin-top:4px}
 
+/* ---------- Simulations terrain ---------- */
+.tmodes{margin:10px 0 4px}
+.tpane{margin-top:10px}
+.simstep{border:2px solid var(--line);border-radius:14px;padding:14px;margin:12px 0;background:#fffdf8}
+.simstep.done{border-color:var(--ok);background:#f6fbf7}
+.simhead{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+.scene{background:var(--cream);border-left:5px solid var(--gold);border-radius:10px;padding:10px 14px;margin-bottom:10px}
+.tiles{display:flex;flex-wrap:wrap;gap:6px}
+.tile{position:relative;border:2px solid var(--line);background:#fff;border-radius:10px;padding:4px 6px;min-width:62px;display:flex;flex-direction:column;align-items:center;line-height:1.1}
+.tile .ti{font-size:1.5rem}
+.tile small{font-size:.66rem;font-weight:800;color:var(--muted)}
+.tile em{font-style:normal;font-size:.62rem;font-weight:800;color:var(--red)}
+.tile.bad{border-color:var(--red);background:#fff4f3}
+.tile.counted{background:var(--pine-soft);border-color:var(--pine2)}
+.tile.counted::after{content:'✓';position:absolute;top:-6px;right:-6px;background:var(--pine2);color:#fff;border-radius:50%;width:18px;height:18px;font-size:.7rem;display:grid;place-items:center}
+.tiles.sm .tile{min-width:54px}.tiles.sm .tile .ti{font-size:1.25rem}
+.cartons{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.carton{border:2px solid #b98a4e;background:#f4e3c7;border-radius:10px;padding:8px 10px;text-align:left;max-width:240px;display:flex;flex-direction:column}
+.carton .ti{font-size:1.5rem}.carton small{color:#6b5208}
+.carton.sel{outline:4px solid var(--red)}
+.shelf{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:repeat(3,auto);gap:8px}
+.shelf .zone{border:3px solid var(--night);border-radius:10px;background:#fff;min-height:70px;padding:8px;cursor:pointer;display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start}
+.shelf .zone.ent{grid-column:2;grid-row:1 / span 3;border-color:#e67e22;background:#fff8f0}
+.shelf .zone:not(.ent){grid-column:1}
+.zl{width:100%;font-weight:800;font-size:.82rem;color:var(--muted)}
+.chipc{border:2px solid var(--line);background:var(--cream);border-radius:999px;padding:3px 10px;font-weight:700;font-size:.85rem}
+.chipc.ko{border-color:var(--ko);background:#fff1f0}.chipc.okc{border-color:var(--ok);background:#effaf3}
+@media (max-width:560px){.shelf{grid-template-columns:1fr}.shelf .zone.ent{grid-column:1;grid-row:auto}}
+.doc-mini{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:10px;overflow-x:auto}
+.rack{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+.slot{border:2px solid var(--night);border-radius:10px;padding:8px;background:#fff}
+.bac{margin-top:10px;border:3px dashed var(--pine2);border-radius:12px;padding:10px;background:#f6fbf7}
+.spots{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.spot{display:flex;gap:10px;align-items:center;text-align:left;border:2px solid var(--line);background:#fff;border-radius:12px;padding:10px}
+.spot .ti{font-size:1.6rem}
+.spot.sel{border-color:var(--red);background:var(--red-soft)}
+.label-card,.bl-res{border:2px solid var(--night);border-radius:12px;padding:12px;background:#fff;display:grid;gap:8px}
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.fl{display:flex;flex-direction:column;gap:3px;font-weight:700;font-size:.88rem}
+.preview{background:var(--cream);border-radius:8px;padding:8px 10px;font-style:italic}
+
 /* ---------- Auto-évaluation & tableau de bord ---------- */
 .selfm{background:#fff;border:3px solid var(--info);border-radius:18px;padding:20px;margin-top:22px;box-shadow:var(--shadow)}
 .selfm h3{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -812,6 +853,7 @@ const CODE = MISSIONS.map(m=>m.digit).join('');
 /* ---- Réglages enseignant (modifiables) ---- */
 const PROF_CODE = 'MANDARINE4729';   // affiche le corrigé dans l'espace enseignant
 const TERRAIN_CODE = 'COMETE83';    // valide une étape terrain
+const TERRAIN_MODE = 'both';    // 'both' = ordinateur ou plateau · 'simulation' = ordinateur seulement · 'plateau' = plateau seulement
 const REQUIRE_TERRAIN = false;   // true = le coffre exige aussi les 6 étapes terrain validées
 const PAUSE_AFTER = 4;           // nombre d'essais ratés avant une pause de réflexion
 const PAUSE_SECONDS = 30;
@@ -847,6 +889,16 @@ const MEVAL = {
 };
 const RATES3=[['😕','Je découvre'],['🙂','Avec de l’aide'],['😃','Seul(e)']];
 const POS=['Non évalué','Non maîtrisé','Partiellement maîtrisé','Maîtrisé','Bien maîtrisé'];
+
+/* ---- Consignes des simulations sur ordinateur ---- */
+const SIM_TASK = {
+ 1:'Réceptionne le colis du rayon épicerie fine : vérifie avant de signer, compte les produits, puis écris la réserve sur le bon de livraison.',
+ 2:'Range 5 cartons de l’épicerie dans la réserve, applique le FIFO et choisis les bons gestes de sécurité.',
+ 3:'Prépare une commande click & collect : prélève les produits dans la réserve, emballe, étiquette et dépose le colis.',
+ 4:'En équipe de 3 : repérez les risques de démarque du rayon, classez-les, proposez un moyen de lutte et préparez la présentation orale.',
+ 5:'En binôme : faites l’inventaire d’une étagère en deux comptages, rôles inversés, puis calculez les écarts.',
+ 6:'Remplis le bon de commande fournisseur à partir du cadencier : fournisseur, date, produits, quantités et montants.'
+};
 
 /* ---- Pictogrammes des choix ---- */
 const ICONS = {
@@ -1026,7 +1078,7 @@ function renderAdvent(){
   MISSIONS.forEach(m=>{
     const st=S.missions[m.id]; const done=st&&st.done;
     const b=h('button',{class:'door'+(done?' done':''),'aria-label':`Mission ${m.id} : ${m.title}`});
-    b.innerHTML = done ? `<div class="face"><div class="row" style="justify-content:space-between;align-items:flex-start"><div class="num">${m.day}<small>décembre</small></div><div class="digit">${m.digit}</div></div><div><div class="ttl">${m.title}</div><div class="stars">${starStr(st.stars)}</div><div class="comp" style="color:var(--muted)">Réussie au niveau ${LEVELS[st.level].name} · rejouer</div><div class="tbadge" style="color:${S.terrain[m.id]?'var(--pine)':'#9a7a12'}">${S.terrain[m.id]?'🧰 Terrain validé':'🧰 Étape terrain à faire'}</div><div class="tbadge" style="color:${selfDone(S,m.id)?'var(--pine)':'#9a7a12'}">${selfDone(S,m.id)?'🪞 Auto-évaluation faite':'🪞 Auto-évaluation à faire'}</div></div></div>`
+    b.innerHTML = done ? `<div class="face"><div class="row" style="justify-content:space-between;align-items:flex-start"><div class="num">${m.day}<small>décembre</small></div><div class="digit">${m.digit}</div></div><div><div class="ttl">${m.title}</div><div class="stars">${starStr(st.stars)}</div><div class="comp" style="color:var(--muted)">Réussie au niveau ${LEVELS[st.level].name} · rejouer</div><div class="tbadge" style="color:${S.terrain[m.id]?'var(--pine)':'#9a7a12'}">${S.terrain[m.id]?(S.terrain[m.id].mode==='simulation'?'🖥 Terrain fait sur ordinateur':'🧰 Terrain validé'):'🧰 Étape terrain à faire'}</div><div class="tbadge" style="color:${selfDone(S,m.id)?'var(--pine)':'#9a7a12'}">${selfDone(S,m.id)?'🪞 Auto-évaluation faite':'🪞 Auto-évaluation à faire'}</div></div></div>`
       : `<span class="ribbon"></span><span class="bow">🎀</span><div class="face"><div class="num">${m.day}<small>décembre · mission ${m.id}</small></div><div><div class="ttl">${m.title}</div><div class="comp">${m.comps.join(' · ')}</div></div></div>`;
     b.addEventListener('click',()=>openMission(m.id));
     g.appendChild(b);
@@ -1283,27 +1335,306 @@ function renderSelfm(m){
 /* =========================================================
    ÉTAPE TERRAIN
    ========================================================= */
+/* =========================================================
+   SIMULATIONS TERRAIN (activités terrain sur ordinateur)
+   Rayon « épicerie fine de Noël » du Comptoir des Lutins
+   ========================================================= */
+const EPI={
+ CAF:{ref:'CAF-250',d:'Café moulu de Noël 250 g',ic:'☕',pa:3.10},
+ CER:{ref:'CER-375',d:'Céréales au chocolat 375 g',ic:'🥣',pa:2.20},
+ BIS:{ref:'BIS-NOE',d:'Boîte de biscuits de Noël',ic:'🍪',pa:4.50},
+ THE:{ref:'THE-NOE',d:'Thé de Noël 20 sachets',ic:'🍵',pa:2.80},
+ CON:{ref:'CON-MAR',d:'Conserve de marrons 400 g',ic:'🥫',pa:1.90},
+ CHO:{ref:'CHO-TAB',d:'Tablette de chocolat noir 100 g',ic:'🍫',pa:1.30},
+ MIE:{ref:'CER-MIE',d:'Céréales au miel 375 g',ic:'🍯'},
+ SSU:{ref:'BIS-SSU',d:'Biscuits sans sucre',ic:'🍘'},
+ LAI:{ref:'CHO-LAI',d:'Tablette de chocolat au lait 100 g',ic:'🍬'}
+};
+const BAD_LABEL={CAF:'paquet percé',BIS:'boîte écrasée',CON:'conserve cabossée',CHO:'emballage déchiré'};
+function rngFor(mid){ let x=2166136261; for(const ch of String(S.name||'eleve')+'|'+mid){ x^=ch.charCodeAt(0); x=Math.imul(x,16777619); } let a=x>>>0;
+  return ()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function rshuf(arr,r){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const n2=v=>{ const n=parseNum(v); return isNaN(n)?NaN:Math.round(n*100)/100; };
+const near=(a,b)=>!isNaN(a)&&Math.abs(a-b)<0.011;
+
+/* tuiles de produits à compter ou à prendre */
+function tileHTML(t,i){ return `<button type="button" class="tile${t.bad?' bad':''}" data-i="${i}" title="${t.label||''}"><span class="ti">${t.ic}</span><small>${t.ref}</small>${t.bad?`<em>${t.label}</em>`:''}</button>`; }
+function tilesGrid(tiles,{toggle=true}={}){
+  const g=h('div',{class:'tiles'}); g.innerHTML=tiles.map(tileHTML).join('');
+  if(toggle) g.querySelectorAll('.tile').forEach(b=>b.onclick=()=>b.classList.toggle('counted'));
+  return g;
+}
+function qcmEl(name,options){ const box=h('div',{class:'opts'}); options.forEach((o,i)=>{ const l=h('label',{class:'opt'}); l.innerHTML=`<input type="radio" name="${name}" value="${i}"><span>${o}</span>`; box.appendChild(l); }); return box; }
+function multiEl(options){ const box=h('div',{class:'opts'}); options.forEach((o,i)=>{ const l=h('label',{class:'opt'}); l.innerHTML=`<input type="checkbox" value="${i}"><span>${o}</span>`; box.appendChild(l); }); return box; }
+const radioVal=(el)=>{ const c=el.querySelector('input[type=radio]:checked'); return c?Number(c.value):-1; };
+const multiVals=(el)=>[...el.querySelectorAll('input[type=checkbox]:checked')].map(c=>Number(c.value)).sort().join(',');
+function selectEl(opts,ph='— choisir —'){ const s=h('select'); s.innerHTML=`<option value="">${ph}</option>`+opts.map(o=>`<option value="${esc(o)}">${ICONS[o]?ICONS[o]+' ':''}${esc(o)}</option>`).join(''); return s; }
+
+const SIMS={
+/* ---------- M1 · Réception ---------- */
+1:(ctx)=>{
+  const r=ctx.r; const lines=[['CAF',6],['CER',8],['BIS',5],['THE',4],['CON',6],['CHO',10]];
+  const variant=['manquant','avarie','erreur'][Math.floor(r()*3)];
+  let target; if(variant==='erreur') target=1; else if(variant==='avarie') target=[0,2,4][Math.floor(r()*3)]; else target=Math.floor(r()*6);
+  const tiles=[];
+  lines.forEach(([k,q],i)=>{ let n=q, key=k; if(i===target&&variant==='manquant') n=q-2; if(i===target&&variant==='erreur') key='MIE';
+    for(let j=0;j<n;j++) tiles.push({ref:EPI[key].ref,ic:EPI[key].ic,bad:(i===target&&variant==='avarie'&&j===0),label:BAD_LABEL[k]}); });
+  const tk=lines[target][0]; const tq=lines[target][1];
+  ctx.info=`Anomalie tirée pour cet élève : ${variant} sur ${EPI[tk].ref}.`;
+  return [
+   {title:'Le camion arrive', crit:[0], say:'Le livreur de TransEst Express dépose un colis de Nordlys Distribution. Que fais-tu en premier ?',
+    render(el){ el.innerHTML=`<div class="scene">🚚 <b>TransEst Express</b> dépose <b>1 colis</b> (12 kg) pour le rayon épicerie fine. Bon de livraison n° BL-NL-60188. Le livreur est pressé : « Vous signez ici ? »</div>`;
+      const q=qcmEl('m1s1',['Je signe tout de suite pour ne pas faire attendre le livreur','Je compte les colis et je vérifie leur état avant de signer','Je laisse le livreur repartir et je regarderai plus tard']); el.appendChild(q);
+      return ()=>radioVal(q)===1?{ok:true}:{ok:false,msg:'Avant de signer, on vérifie toujours le nombre de colis et leur état.'}; }},
+   {title:'Contrôler le contenu du colis', crit:[1,2], say:'Le colis est ouvert. Compte les produits de chaque référence. Tu peux cliquer sur un produit pour le marquer comme compté. Écris la quantité reçue, puis indique si la ligne est conforme.',
+    render(el){ el.appendChild(h('p',{class:'mini'},'Le colis ouvert · clique sur un produit pour le marquer « compté ».'));
+      el.appendChild(tilesGrid(rshuf(tiles,r)));
+      const tw=h('div',{class:'tablewrap',style:'margin-top:12px'}); const t=h('table'); t.innerHTML='<thead><tr><th>Réf.</th><th>Désignation</th><th>Qté sur le BL</th><th>Qté reçue</th><th>Conforme ?</th></tr></thead>';
+      const tb=h('tbody'); const ins=[];
+      lines.forEach(([k,q])=>{ const tr=h('tr'); tr.innerHTML=`<td>${EPI[k].ref}</td><td>${EPI[k].d}</td><td>${q}</td>`; const a=h('input',{type:'text',inputmode:'numeric'}); const b=selectEl(['Oui','Non']); const c1=h('td'); c1.appendChild(a); const c2=h('td'); c2.appendChild(b); tr.appendChild(c1); tr.appendChild(c2); tb.appendChild(tr); ins.push([a,b,c1,c2]); });
+      t.appendChild(tb); tw.appendChild(t); el.appendChild(tw);
+      return ()=>{ let eq=0, ec=0;
+        lines.forEach(([k,q],i)=>{ const [a,b,c1,c2]=ins[i]; const v=n2(a.value); let okq;
+          if(i!==target) okq=v===q; else if(variant==='manquant') okq=v===q-2; else if(variant==='avarie') okq=(v===q||v===q-1); else okq=(v===0||v===q);
+          const okc= b.value===(i===target?'Non':'Oui');
+          c1.className=okq?'ok':'ko'; c2.className=okc?'ok':'ko'; if(!okq) eq++; if(!okc) ec++; });
+        return (eq+ec)===0?{ok:true}:{ok:false,msg:`${eq} quantité(s) et ${ec} conformité(s) à corriger (en rouge). Recompte les produits de chaque référence.`}; }; }},
+   {title:'Écrire la réserve', crit:[3], say:'Écris la réserve sur le bon de livraison : le type de problème, le produit, la quantité, puis la date, l’heure, ton nom et ta signature.',
+    render(el){ const typ=selectEl(['Manquant','Avarie (casse)','Erreur de référence','Excédent']); const ref=selectEl(lines.map(([k])=>EPI[k].ref)); const qty=h('input',{type:'text',inputmode:'numeric',placeholder:'Quantité'});
+      const date=h('input',{type:'text',placeholder:'jj/mm/aaaa'}); const heure=h('input',{type:'text',placeholder:'ex. 7 h 50'}); const nom=h('input',{type:'text',placeholder:'Ton nom'}); const sig=h('input',{type:'text',placeholder:'Tes initiales'});
+      el.innerHTML='<div class="bl-res"><b>Bon de livraison BL-NL-60188 · Réserves du destinataire</b><div class="rgrid"></div><div class="preview"></div></div>';
+      const g=el.querySelector('.rgrid'); [['Problème',typ],['Produit',ref],['Quantité concernée',qty],['Date',date],['Heure',heure],['Nom',nom],['Signature',sig]].forEach(([l,i])=>{ const w=h('label',{class:'fl'}); w.appendChild(h('span',{},l)); w.appendChild(i); g.appendChild(w); });
+      const pv=el.querySelector('.preview'); const upd=()=>{ pv.textContent=`« ${typ.value||'…'} : ${qty.value||'…'} ${ref.value||'…'} » – le ${date.value||'…'} à ${heure.value||'…'} – ${nom.value||'…'} – signature : ${sig.value||'…'}`; };
+      el.querySelectorAll('input,select').forEach(x=>x.addEventListener('input',upd)); upd();
+      const expT={manquant:'Manquant',avarie:'Avarie (casse)',erreur:'Erreur de référence'}[variant]; const expQ={manquant:2,avarie:1,erreur:tq}[variant];
+      return ()=>{ const errs=[]; if(typ.value!==expT) errs.push('le type de problème'); if(ref.value!==EPI[tk].ref) errs.push('le produit'); if(n2(qty.value)!==expQ) errs.push('la quantité');
+        if(!/^\s*\d{1,2}\/\d{1,2}\/\d{2,4}\s*$/.test(date.value)) errs.push('la date (jj/mm/aaaa)'); if(!heure.value.trim()) errs.push('l’heure'); if(nom.value.trim().length<2) errs.push('ton nom'); if(!sig.value.trim()) errs.push('ta signature');
+        return errs.length?{ok:false,msg:'À corriger : '+errs.join(', ')+'.'}:{ok:true,trace:pv.textContent}; }; }}
+  ];
+},
+/* ---------- M2 · Rangement ---------- */
+2:(ctx)=>{
+  const items=[{k:'eau',ic:'💧',t:'Pack de 6 bouteilles d’eau 1,5 L',info:'9 kg · lourd',z:'bas'},{k:'conf',ic:'🍯',t:'Carton de bocaux de confiture',info:'verre · fragile',z:'milieu'},{k:'cer',ic:'🥣',t:'Carton de céréales',info:'1 kg · léger',z:'haut'},{k:'caf',ic:'☕',t:'Carton de café · nouveau lot',info:'DDM 09/2027 · se conserve au sec',z:'milieu'},{k:'ent',ic:'🧴',t:'Carton de produits d’entretien',info:'produit ménager · ne jamais ranger avec l’alimentaire',z:'entretien'}];
+  const ZN={haut:'⬆️ Niveau haut',milieu:'↔️ Niveau milieu',bas:'⬇️ Niveau bas (sol)',entretien:'🧴 Étagère entretien (séparée)'};
+  return [
+   {title:'Ranger les 5 cartons', crit:[0], say:'Range les 5 cartons. Clique sur un carton, puis sur l’endroit où tu le ranges. Pense au poids, à la fragilité et au type de produit.',
+    render(el){ const place={}; let sel=null;
+      el.innerHTML='<p class="mini">1. Clique sur un carton · 2. Clique sur l’endroit où tu le ranges.</p><div class="cartons"></div><div class="shelf"></div>';
+      const cz=el.querySelector('.cartons'), sh=el.querySelector('.shelf');
+      const draw=()=>{ cz.innerHTML=''; items.forEach(it=>{ if(place[it.k]) return; const b=h('button',{type:'button',class:'carton'+(sel===it.k?' sel':'')},`<span class="ti">${it.ic}</span><b>${it.t}</b><small>${it.info}</small>`); b.onclick=()=>{ sel=it.k; draw(); }; cz.appendChild(b); });
+        if(!cz.children.length) cz.innerHTML='<p class="mini">✅ Tous les cartons sont placés. Clique sur un carton rangé pour le reprendre.</p>';
+        sh.innerHTML=''; Object.entries(ZN).forEach(([z,l])=>{ const d=h('div',{class:'zone'+(z==='entretien'?' ent':'')}); d.dataset.z=z; d.innerHTML=`<div class="zl">${l}</div>`;
+          items.filter(it=>place[it.k]===z).forEach(it=>{ const c=h('button',{type:'button',class:'chipc'},`${it.ic} ${it.t}`); c.onclick=(ev)=>{ ev.stopPropagation(); delete place[it.k]; sel=it.k; draw(); }; d.appendChild(c); });
+          d.onclick=()=>{ if(sel){ place[sel]=z; sel=null; draw(); } }; sh.appendChild(d); }); };
+      draw();
+      return ()=>{ const miss=items.filter(it=>!place[it.k]).length; if(miss) return {ok:false,msg:`Il reste ${miss} carton(s) à ranger.`};
+        const bad=items.filter(it=>place[it.k]!==it.z); sh.querySelectorAll('.chipc').forEach(c=>{ const it=items.find(x=>c.textContent.includes(x.t)); c.classList.toggle('ko',place[it.k]!==it.z); c.classList.toggle('okc',place[it.k]===it.z); });
+        return bad.length?{ok:false,msg:`${bad.length} carton(s) mal rangé(s) (en rouge). Lourd en bas, léger en haut, fragile au milieu, entretien à part.`}:{ok:true}; }; }},
+   {title:'Le nouveau lot de café', crit:[1], say:'Un ancien lot de café, avec une date de mars 2027, est déjà sur l’étagère. Où places-tu le nouveau lot, daté de septembre 2027 ?',
+    render(el){ el.innerHTML='<div class="scene">☕ Sur l’étagère du milieu : l’<b>ancien lot</b> de café (DDM 03/2027). Tu arrives avec le <b>nouveau lot</b> (DDM 09/2027).</div>'; const q=qcmEl('m2s2',['Devant l’ancien lot, pour qu’on le voie bien','Derrière l’ancien lot : l’ancien sortira en premier','Mélangé avec l’ancien lot']); el.appendChild(q);
+      return ()=>radioVal(q)===1?{ok:true}:{ok:false,msg:'Pense au FIFO : premier entré, premier sorti.'}; }},
+   {title:'Porter le pack d’eau', crit:[2], say:'Le pack d’eau pèse 9 kilos. Comment le soulèves-tu ?',
+    render(el){ const q=qcmEl('m2s3',['🙇 Je me penche en avant, jambes tendues, dos rond','🏋️ Je plie les jambes, je garde le dos droit et la charge près du corps','🔄 Je le soulève bras tendus en tournant le buste']); el.appendChild(q);
+      return ()=>radioVal(q)===1?{ok:true}:{ok:false,msg:'Ce geste peut te faire mal au dos. Les jambes travaillent, le dos reste droit.'}; }},
+   {title:'Vérifier la réserve', crit:[3], say:'Il reste des cartons vides devant la porte de la sortie de secours. Que fais-tu ?',
+    render(el){ el.innerHTML='<div class="scene">📦📦 Deux cartons vides sont posés devant la <b>sortie de secours</b> 🚪.</div>'; const q=qcmEl('m2s4',['Je les laisse : je les jetterai ce soir','Je les aplatis et je les mets au tri tout de suite pour dégager le passage','Je les pousse un peu sur le côté de la porte']); el.appendChild(q);
+      return ()=>radioVal(q)===1?{ok:true}:{ok:false,msg:'Une sortie de secours doit toujours rester complètement dégagée.'}; }}
+  ];
+},
+/* ---------- M3 · Click & collect ---------- */
+3:(ctx)=>{
+  const r=ctx.r;
+  const orders=[{n:'CC-2412-131',c:'M. Petit Lucas',ret:'21/12/2026 à 10 h',l:[['CAF',2,'B-01-M'],['CON',3,'B-02-B'],['BIS',1,'C-03-M'],['CHO',4,'C-04-H']]},
+                {n:'CC-2412-147',c:'Mme Leroy Inès',ret:'22/12/2026 à 14 h',l:[['THE',2,'C-01-M'],['CER',1,'C-02-H'],['CON',2,'B-02-B'],['BIS',1,'C-03-M']]}];
+  const o=orders[Math.floor(r()*2)];
+  const stock={'B-01-M':[['CAF',5,1]],'B-02-B':[['CON',6,1]],'C-01-M':[['THE',4,0]],'C-02-H':[['CER',3,0],['MIE',2,0]],'C-03-M':[['BIS',3,1],['SSU',2,0]],'C-04-H':[['CHO',8,0],['LAI',3,0]]};
+  const shelves={}; Object.entries(stock).forEach(([ad,arr])=>{ shelves[ad]=[]; arr.forEach(([k,n,bad])=>{ for(let j=0;j<n;j++) shelves[ad].push({key:k,ref:EPI[k].ref,ic:EPI[k].ic,bad:j<bad,label:BAD_LABEL[k]}); }); shelves[ad]=rshuf(shelves[ad],r); });
+  const bac=[];
+  return [
+   {title:'Prélever les articles', crit:[0,1], say:'Lis le bon de préparation. Va à chaque adresse et clique sur les bons produits pour les mettre dans le bac. Attention aux produits abîmés et aux références qui se ressemblent.',
+    render(el){ el.innerHTML=`<div class="doc-mini"><b>Bon de préparation ${o.n}</b> · Client : ${o.c} · Retrait le ${o.ret}<table style="min-width:0;margin-top:6px"><thead><tr><th>Adresse</th><th>Réf.</th><th>Désignation</th><th>Qté</th></tr></thead><tbody>${o.l.map(([k,q,ad])=>`<tr><td>${ad}</td><td>${EPI[k].ref}</td><td>${EPI[k].d}</td><td>${q}</td></tr>`).join('')}</tbody></table></div><div class="rack"></div><div class="bac"><b>🧺 Ton bac</b> <small class="mini">(clique sur un produit du bac pour le reposer)</small><div class="bt"></div></div>`;
+      const rack=el.querySelector('.rack'), bt=el.querySelector('.bt');
+      const draw=()=>{ rack.innerHTML=''; Object.keys(shelves).sort().forEach(ad=>{ const d=h('div',{class:'slot'}); d.innerHTML=`<div class="zl">📍 ${ad}</div>`; const g=h('div',{class:'tiles sm'}); shelves[ad].forEach((t,i)=>{ const b=h('button',{type:'button',class:'tile'+(t.bad?' bad':'')},`<span class="ti">${t.ic}</span><small>${t.ref}</small>${t.bad?`<em>${t.label}</em>`:''}`); b.onclick=()=>{ bac.push(Object.assign({ad},t)); shelves[ad].splice(i,1); draw(); }; g.appendChild(b); }); d.appendChild(g); rack.appendChild(d); });
+        bt.innerHTML=''; const g=h('div',{class:'tiles sm'}); bac.forEach((t,i)=>{ const b=h('button',{type:'button',class:'tile'+(t.bad?' bad':'')},`<span class="ti">${t.ic}</span><small>${t.ref}</small>${t.bad?`<em>${t.label}</em>`:''}`); b.onclick=()=>{ shelves[t.ad].push(t); bac.splice(i,1); draw(); }; g.appendChild(b); }); bt.appendChild(g); if(!bac.length) bt.innerHTML='<p class="mini">Le bac est vide.</p>'; };
+      draw();
+      return ()=>{ const cnt={}; bac.forEach(t=>{ cnt[t.key]=(cnt[t.key]||0)+1; }); const wantK=o.l.map(x=>x[0]);
+        const refErr = o.l.some(([k,q])=>(cnt[k]||0)!==q) || Object.keys(cnt).some(k=>!wantK.includes(k)); const badIn=bac.some(t=>t.bad);
+        if(refErr) return {ok:false,msg:'Le bac ne correspond pas au bon : vérifie les références et les quantités.'+(badIn?' Il y a aussi un produit abîmé dans le bac.':'')};
+        if(badIn) return {ok:false,msg:'Un produit abîmé est dans le bac : remplace-le par un produit en bon état.'}; return {ok:true}; }; }},
+   {title:'Emballer', crit:[2], say:'Comment prépares-tu le colis ? Coche tout ce que tu fais.',
+    render(el){ const q=multiEl(['Je mets les produits lourds (conserves) au fond','Je protège les produits qui peuvent s’abîmer avec du papier','Je ferme le colis avec du ruban adhésif','Je mets les tablettes de chocolat sous les conserves','Je laisse le colis ouvert pour gagner du temps']); el.appendChild(q);
+      return ()=>multiVals(q)==='0,1,2'?{ok:true}:{ok:false,msg:'Pas encore : relis chaque phrase. Lourd au fond, fragile protégé, colis fermé.'}; }},
+   {title:'Étiqueter le colis', crit:[3], say:'Remplis l’étiquette du colis avec le numéro de commande, le nom du client, le nombre de colis et la date de retrait.',
+    render(el){ const f={n:h('input',{type:'text',placeholder:'CC-…'}),c:h('input',{type:'text'}),nb:h('input',{type:'text',inputmode:'numeric'}),d:h('input',{type:'text',placeholder:'jj/mm/aaaa'})};
+      const w=h('div',{class:'label-card'}); w.innerHTML='<b>LE COMPTOIR DES LUTINS · CLICK &amp; COLLECT</b>'; [['N° de commande',f.n],['Nom du client',f.c],['Nombre de colis',f.nb],['Date de retrait',f.d]].forEach(([l,i])=>{ const x=h('label',{class:'fl'}); x.appendChild(h('span',{},l)); x.appendChild(i); w.appendChild(x); }); el.appendChild(w);
+      const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'');
+      return ()=>{ const e=[]; if(norm(f.n.value)!==norm(o.n)) e.push('le n° de commande'); const last=o.c.split(' ')[1]; if(!norm(f.c.value).includes(norm(last))) e.push('le nom du client'); if(n2(f.nb.value)!==1) e.push('le nombre de colis'); if(!f.d.value.includes(o.ret.slice(0,5))) e.push('la date de retrait');
+        return e.length?{ok:false,msg:'À corriger : '+e.join(', ')+'.'}:{ok:true}; }; }},
+   {title:'Déposer la commande', crit:[4], say:'Le colis est prêt. Que fais-tu ? Coche tout ce que tu fais.',
+    render(el){ const q=multiEl(['Je dépose le colis en zone de retrait click & collect','Je passe la commande au statut « prête » : le client reçoit un SMS','Je laisse le colis dans la réserve','Je le pose derrière la caisse sans rien noter']); el.appendChild(q);
+      return ()=>multiVals(q)==='0,1'?{ok:true}:{ok:false,msg:'Le client doit trouver sa commande et être prévenu qu’elle est prête.'}; }}
+  ];
+},
+/* ---------- M4 · Démarque (équipe) ---------- */
+4:(ctx)=>{
+  const r=ctx.r; const team=[];
+  const spots=rshuf([
+   {id:'R1',ic:'🍵',t:'Coffret de thé à 29,90 € posé près de la sortie, sans antivol',risk:true,type:'Démarque inconnue',m:'Antivol ou placement à la vue de l’équipe'},
+   {id:'R2',ic:'🏷️',t:'Étiquette à 1,20 € sur un paquet de café vendu 4,90 €',risk:true,type:'Démarque inconnue',m:'Double contrôle de l’étiquetage'},
+   {id:'R3',ic:'🍪',t:'Boîte de biscuits écrasée en rayon (vous la retirez et l’enregistrez)',risk:true,type:'Démarque connue',m:'Manipuler avec soin et retirer le produit abîmé'},
+   {id:'R4',ic:'📅',t:'Céréales dont la date (DDM) est dépassée depuis 2 mois (vous les retirez et les enregistrez)',risk:true,type:'Démarque connue',m:'Rotation FIFO et contrôle régulier des dates'},
+   {id:'S1',ic:'📷',t:'Une caméra filme la zone des caisses',risk:false},
+   {id:'S2',ic:'🗂️',t:'Les produits sont rangés par famille, avec les bonnes étiquettes',risk:false},
+   {id:'S3',ic:'🍯',t:'Les bocaux de confiture sont au niveau du milieu',risk:false},
+   {id:'S4',ic:'🛒',t:'L’allée centrale est dégagée',risk:false}],r);
+  let found=[];
+  const MOY=['Antivol ou placement à la vue de l’équipe','Double contrôle de l’étiquetage','Manipuler avec soin et retirer le produit abîmé','Rotation FIFO et contrôle régulier des dates'];
+  return [
+   {title:'Votre équipe', crit:[], say:'Écrivez les prénoms des trois membres de l’équipe.',
+    render(el){ const ins=[1,2,3].map(i=>h('input',{type:'text',placeholder:'Prénom '+i})); const w=h('div',{class:'row'}); ins.forEach(i=>{ i.style.maxWidth='200px'; w.appendChild(i); }); el.appendChild(w);
+      return ()=>{ const v=ins.map(i=>i.value.trim()); if(v.some(x=>x.length<2)||new Set(v.map(x=>x.toLowerCase())).size<3) return {ok:false,msg:'Écrivez trois prénoms différents.'}; team.splice(0,3,...v); return {ok:true}; }; }},
+   {title:'Repérer les risques', crit:[0], say:'Faites le tour du rayon. Cliquez sur les situations qui sont un risque de démarque. Il y en a au moins trois.',
+    render(el){ el.appendChild(h('p',{class:'mini'},'Cliquez sur chaque situation qui présente un risque de perte pour le magasin.'));
+      const g=h('div',{class:'spots'}); spots.forEach(s=>{ const b=h('button',{type:'button',class:'spot'},`<span class="ti">${s.ic}</span><span>${s.t}</span>`); b.onclick=()=>b.classList.toggle('sel'); b.dataset.id=s.id; g.appendChild(b); }); el.appendChild(g);
+      return ()=>{ const sel=[...g.querySelectorAll('.spot.sel')].map(b=>spots.find(s=>s.id===b.dataset.id)); const real=sel.filter(s=>s.risk), fake=sel.filter(s=>!s.risk);
+        if(fake.length) return {ok:false,msg:`${fake.length} situation(s) choisie(s) ne sont pas un risque. Relisez-les.`}; if(real.length<3) return {ok:false,msg:`Vous avez trouvé ${real.length} risque(s). Il en faut au moins 3.`};
+        found=real; return {ok:true}; }; }},
+   {title:'Classer et lutter', crit:[1,2], say:'Pour chaque risque trouvé, choisissez le type de démarque et le moyen de lutte.',
+    render(el){ const tw=h('div',{class:'tablewrap'}); const t=h('table'); t.innerHTML='<thead><tr><th>Risque</th><th>Type de démarque</th><th>Moyen de lutte</th></tr></thead>'; const tb=h('tbody'); const ins=[];
+      found.forEach(s=>{ const tr=h('tr'); tr.innerHTML=`<td>${s.ic} ${s.t}</td>`; const a=selectEl(['Démarque connue','Démarque inconnue']), b=selectEl(MOY); const c1=h('td'),c2=h('td'); c1.appendChild(a); c2.appendChild(b); tr.appendChild(c1); tr.appendChild(c2); tb.appendChild(tr); ins.push([s,a,b,c1,c2]); });
+      t.appendChild(tb); tw.appendChild(t); el.appendChild(tw);
+      return ()=>{ let e=0; ins.forEach(([s,a,b,c1,c2])=>{ const o1=a.value===s.type, o2=b.value===s.m; c1.className=o1?'ok':'ko'; c2.className=o2?'ok':'ko'; if(!o1) e++; if(!o2) e++; }); return e?{ok:false,msg:`${e} réponse(s) à corriger (en rouge).`}:{ok:true}; }; }},
+   {title:'Préparer la présentation orale', crit:[3], say:'Chaque membre de l’équipe présentera un risque à l’oral. Choisissez qui présente chaque risque.',
+    render(el){ const tw=h('div',{class:'tablewrap'}); const t=h('table'); t.innerHTML='<thead><tr><th>Risque</th><th>Présenté par</th></tr></thead>'; const tb=h('tbody'); const ins=[];
+      found.forEach(s=>{ const tr=h('tr'); tr.innerHTML=`<td>${s.ic} ${s.t}</td>`; const a=selectEl(team); const c=h('td'); c.appendChild(a); tr.appendChild(c); tb.appendChild(tr); ins.push(a); });
+      t.appendChild(tb); tw.appendChild(t); el.appendChild(tw); el.appendChild(h('p',{class:'mini'},'🎤 Ensuite, présentez vos risques à l’oral devant la classe ou votre enseignante.'));
+      return ()=>{ const v=ins.map(a=>a.value); if(v.some(x=>!x)) return {ok:false,msg:'Choisissez un présentateur pour chaque risque.'}; if(new Set(v).size<3) return {ok:false,msg:'Chaque membre de l’équipe doit présenter au moins un risque.'}; return {ok:true}; }; }}
+  ];
+},
+/* ---------- M5 · Inventaire (binôme) ---------- */
+5:(ctx)=>{
+  const r=ctx.r; const keys=['CAF','CER','BIS','THE','CON','CHO']; const th=[12,15,8,10,6,9];
+  const deltas=rshuf([-2,-1,1,0,0,0],r); const real=th.map((v,i)=>v+deltas[i]);
+  const allTiles=[]; keys.forEach((k,i)=>{ for(let j=0;j<real[i];j++) allTiles.push({ref:EPI[k].ref,ic:EPI[k].ic}); });
+  const duo={}; const c1=[], c2=[];
+  const countTable=(el,arr)=>{ const tw=h('div',{class:'tablewrap',style:'margin-top:12px'}); const t=h('table'); t.innerHTML='<thead><tr><th>Réf.</th><th>Désignation</th><th>Quantité comptée</th></tr></thead>'; const tb=h('tbody'); const ins=[];
+    keys.forEach(k=>{ const tr=h('tr'); tr.innerHTML=`<td>${EPI[k].ref}</td><td>${EPI[k].ic} ${EPI[k].d}</td>`; const i=h('input',{type:'text',inputmode:'numeric'}); const td=h('td'); td.appendChild(i); tr.appendChild(td); tb.appendChild(tr); ins.push(i); });
+    t.appendChild(tb); tw.appendChild(t); el.appendChild(tw); return ins; };
+  return [
+   {title:'Les rôles du binôme', crit:[0], say:'Écrivez qui compte et qui note pour le premier comptage.',
+    render(el){ const a=h('input',{type:'text',placeholder:'Prénom du compteur'}), b=h('input',{type:'text',placeholder:'Prénom du noteur'}); const w=h('div',{class:'row'}); [a,b].forEach(i=>{ i.style.maxWidth='220px'; w.appendChild(i); }); el.appendChild(w);
+      return ()=>{ if(a.value.trim().length<2||b.value.trim().length<2||a.value.trim().toLowerCase()===b.value.trim().toLowerCase()) return {ok:false,msg:'Écrivez deux prénoms différents : un compteur et un noteur.'}; duo.a=a.value.trim(); duo.b=b.value.trim(); return {ok:true}; }; }},
+   {title:'Comptage 1', crit:[], say:'Le compteur compte les produits de chaque référence, le noteur écrit les quantités. Cliquez sur un produit pour le marquer comme compté.',
+    render(el){ el.appendChild(h('p',{class:'mini'},`🔢 ${duo.a} compte · ✍️ ${duo.b} note. Clique sur un produit pour le marquer « compté ».`)); el.appendChild(tilesGrid(rshuf(allTiles,r))); const ins=countTable(el);
+      return ()=>{ if(ins.some(i=>isNaN(n2(i.value)))) return {ok:false,msg:'Écrivez une quantité pour chaque référence.'}; c1.splice(0,6,...ins.map(i=>n2(i.value))); return {ok:true}; }; }},
+   {title:'Comptage 2 · rôles inversés', crit:[], say:'Inversez les rôles et recomptez. Les produits ont été mélangés.',
+    render(el){ el.appendChild(h('p',{class:'mini'},`🔁 Rôles inversés : ${duo.b} compte · ${duo.a} note.`)); el.appendChild(tilesGrid(rshuf(allTiles,Math.random))); const ins=countTable(el);
+      return ()=>{ if(ins.some(i=>isNaN(n2(i.value)))) return {ok:false,msg:'Écrivez une quantité pour chaque référence.'}; c2.splice(0,6,...ins.map(i=>n2(i.value))); return {ok:true}; }; }},
+   {title:'Stock retenu', crit:[1,2], say:'Comparez vos deux comptages. Recomptez les lignes en jaune, où les deux comptages sont différents, puis écrivez le stock retenu.',
+    render(el){ const diff=keys.map((k,i)=>c1[i]!==c2[i]); el.appendChild(h('p',{class:'mini'},diff.some(Boolean)?'🟨 Les lignes en jaune ont deux comptages différents : recomptez-les (les produits sont ci-dessous).':'✅ Vos deux comptages sont identiques. Écrivez le stock retenu.'));
+      if(diff.some(Boolean)) el.appendChild(tilesGrid(rshuf(allTiles,Math.random)));
+      const tw=h('div',{class:'tablewrap',style:'margin-top:12px'}); const t=h('table'); t.innerHTML='<thead><tr><th>Réf.</th><th>Comptage 1</th><th>Comptage 2</th><th>Stock retenu</th></tr></thead>'; const tb=h('tbody'); const ins=[];
+      keys.forEach((k,i)=>{ const tr=h('tr'); if(diff[i]) tr.style.background='#fdf3cf'; tr.innerHTML=`<td>${EPI[k].ic} ${EPI[k].ref}</td><td>${c1[i]}</td><td>${c2[i]}</td>`; const inp=h('input',{type:'text',inputmode:'numeric'}); if(!diff[i]) inp.value=c1[i]; const td=h('td'); td.appendChild(inp); tr.appendChild(td); tb.appendChild(tr); ins.push([inp,td]); });
+      t.appendChild(tb); tw.appendChild(t); el.appendChild(tw);
+      return ()=>{ let e=0; ins.forEach(([inp,td],i)=>{ const ok=n2(inp.value)===real[i]; td.className=ok?'ok':'ko'; if(!ok) e++; }); return e?{ok:false,msg:`${e} stock(s) retenu(s) faux (en rouge) : recomptez ces références.`}:{ok:true}; }; }},
+   {title:'Calculer les écarts', crit:[3], say:'Calculez l’écart pour chaque référence : stock retenu moins stock théorique. N’oubliez pas le signe moins.',
+    render(el){ const tw=h('div',{class:'tablewrap'}); const t=h('table'); t.innerHTML='<thead><tr><th>Réf.</th><th>Stock théorique</th><th>Stock retenu</th><th>Écart</th></tr></thead>'; const tb=h('tbody'); const ins=[];
+      keys.forEach((k,i)=>{ const tr=h('tr'); tr.innerHTML=`<td>${EPI[k].ic} ${EPI[k].ref}</td><td>${th[i]}</td><td>${real[i]}</td>`; const inp=h('input',{type:'text',inputmode:'text',placeholder:'ex. -2'}); const td=h('td'); td.appendChild(inp); tr.appendChild(td); tb.appendChild(tr); ins.push([inp,td]); });
+      t.appendChild(tb); tw.appendChild(t); el.appendChild(tw);
+      return ()=>{ let e=0; ins.forEach(([inp,td],i)=>{ const v=String(inp.value).trim().replace('−','-'); const n=Number(v.replace('+','')); const ok=v!==''&&!isNaN(n)&&n===real[i]-th[i]; td.className=ok?'ok':'ko'; if(!ok) e++; }); return e?{ok:false,msg:`${e} écart(s) faux (en rouge). Écart = retenu − théorique.`}:{ok:true}; }; }}
+  ];
+},
+/* ---------- M6 · Bon de commande ---------- */
+6:(ctx)=>{
+  const cad=[['CAF',5,8,30],['CER',9,12,40],['BIS',10,5,16],['THE',4,6,24],['CON',7,4,12],['CHO',6,6,25]];
+  const exp=cad.map(([k,a,al,mx])=>{ const q=a<=al?mx-a:0; return {k,q,m:Math.round(q*EPI[k].pa*100)/100}; }); const total=Math.round(exp.reduce((s,x)=>s+x.m,0)*100)/100;
+  const fmt=v=>v.toFixed(2).replace('.',',')+' €';
+  let rowsIns=[];
+  return [
+   {title:'L’en-tête du bon de commande', crit:[0,3], say:'Choisis le fournisseur et indique la date de livraison souhaitée. La livraison doit arriver avant Noël.',
+    render(el){ const f=selectEl(['Nordlys Distribution · ZI Actipole, 57000 Metz','TransEst Express · transporteur','Le Comptoir des Lutins · Pont-à-Mousson']); const d=h('input',{type:'text',placeholder:'jj/mm/aaaa'});
+      const w=h('div',{class:'label-card'}); w.innerHTML='<b>BON DE COMMANDE FOURNISSEUR · Client : Le Comptoir des Lutins</b>'; [['Fournisseur',f],['Date de livraison souhaitée',d]].forEach(([l,i])=>{ const x=h('label',{class:'fl'}); x.appendChild(h('span',{},l)); x.appendChild(i); w.appendChild(x); }); el.appendChild(w);
+      return ()=>{ const e=[]; if(!f.value.startsWith('Nordlys')) e.push('le fournisseur (celui qui vend les produits, pas le transporteur)'); const m=d.value.match(/^\s*(\d{1,2})\/(\d{1,2})\/(\d{2,4})\s*$/); if(!m||Number(m[2])!==12||Number(m[1])<23||Number(m[1])>24) e.push('la date : nous sommes le 22/12, il faut une livraison le 23 ou le 24 décembre');
+        return e.length?{ok:false,msg:'À corriger : '+e.join(' ; ')+'.'}:{ok:true}; }; }},
+   {title:'Les produits à commander', crit:[1], say:'Lis le cadencier. Je commande si le stock actuel est inférieur ou égal au stock d’alerte. Quantité égale stock maximum moins stock actuel. Écris zéro si tu ne commandes pas.',
+    render(el){ const tw=h('div',{class:'tablewrap'}); const t=h('table'); t.innerHTML='<thead><tr><th>Réf.</th><th>Désignation</th><th>Stock actuel</th><th>Stock d’alerte</th><th>Stock maximum</th><th>Prix d’achat HT</th><th>Je commande ?</th><th>Quantité</th></tr></thead>'; const tb=h('tbody'); rowsIns=[];
+      cad.forEach(([k,a,al,mx])=>{ const tr=h('tr'); tr.innerHTML=`<td>${EPI[k].ref}</td><td>${EPI[k].ic} ${EPI[k].d}</td><td>${a}</td><td>${al}</td><td>${mx}</td><td>${fmt(EPI[k].pa)}</td>`; const s=selectEl(['Oui','Non']); const q=h('input',{type:'text',inputmode:'numeric'}); const c1=h('td'),c2=h('td'); c1.appendChild(s); c2.appendChild(q); tr.appendChild(c1); tr.appendChild(c2); tb.appendChild(tr); rowsIns.push([s,q,c1,c2]); });
+      t.appendChild(tb); tw.appendChild(t); el.appendChild(tw);
+      return ()=>{ let e=0; rowsIns.forEach(([s,q,c1,c2],i)=>{ const o1=s.value===(exp[i].q>0?'Oui':'Non'), o2=n2(q.value)===exp[i].q; c1.className=o1?'ok':'ko'; c2.className=o2?'ok':'ko'; if(!o1)e++; if(!o2)e++; }); return e?{ok:false,msg:`${e} réponse(s) à corriger (en rouge).`}:{ok:true}; }; }},
+   {title:'Les montants', crit:[2], say:'Calcule le montant hors taxes de chaque ligne commandée : quantité fois prix d’achat. Puis calcule le total hors taxes.',
+    render(el){ const lines=exp.filter(x=>x.q>0); const tw=h('div',{class:'tablewrap'}); const t=h('table'); t.innerHTML='<thead><tr><th>Réf.</th><th>Quantité</th><th>Prix unitaire HT</th><th>Montant HT (€)</th></tr></thead>'; const tb=h('tbody'); const ins=[];
+      lines.forEach(x=>{ const tr=h('tr'); tr.innerHTML=`<td>${EPI[x.k].ref}</td><td>${x.q}</td><td>${fmt(EPI[x.k].pa)}</td>`; const i=h('input',{type:'text',inputmode:'decimal'}); const td=h('td'); td.appendChild(i); tr.appendChild(td); tb.appendChild(tr); ins.push([i,td,x]); });
+      const tr=h('tr'); tr.innerHTML='<td colspan="3"><b>Total HT</b></td>'; const ti=h('input',{type:'text',inputmode:'decimal'}); const ttd=h('td'); ttd.appendChild(ti); tr.appendChild(ttd); tb.appendChild(tr);
+      t.appendChild(tb); tw.appendChild(t); el.appendChild(tw);
+      return ()=>{ let e=0; ins.forEach(([i,td,x])=>{ const ok=near(n2(i.value),x.m); td.className=ok?'ok':'ko'; if(!ok)e++; }); const ok=near(n2(ti.value),total); ttd.className=ok?'ok':'ko'; if(!ok)e++; return e?{ok:false,msg:`${e} montant(s) à corriger (en rouge).`}:{ok:true}; }; }}
+  ];
+}
+};
+
+function runSim(m, box, onDone){
+  box.innerHTML='';
+  const ctx={r:rngFor(m.id),crit:new Set(),traces:[]};
+  const steps=SIMS[m.id](ctx); const T=TERRAIN[m.id];
+  let i=0;
+  const next=()=>{
+    if(i>=steps.length){ const prev=S.terrain[m.id];
+      const rec={ok:true,mode:'simulation',date:new Date().toLocaleDateString('fr-FR'),crit:[...ctx.crit].sort((a,b)=>a-b),traces:ctx.traces};
+      if(!prev || prev.mode==='simulation') S.terrain[m.id]=rec; S.sim=S.sim||{}; S.sim[m.id]=rec; save(); burst();
+      const res=h('div',{class:'ok-badge',style:'margin-top:12px'}); res.innerHTML=`✅ Simulation terminée ! Critères réussis du premier ou du deuxième coup : ${rec.crit.length} / ${T.crit.length}.<ul style="margin:.4em 0 0;padding-left:18px;font-weight:600">${T.crit.map((c,j)=>`<li>${rec.crit.includes(j)?'✔':'○'} ${c}</li>`).join('')}</ul>`;
+      box.appendChild(res); onDone&&onDone(); return; }
+    const st=steps[i]; const sb=h('div',{class:'simstep'});
+    const hd=h('div',{class:'simhead'},`<span class="bnum">${i+1}</span><b style="flex:1">${st.title}</b><small class="mini">Étape ${i+1} / ${steps.length}</small>`); hd.appendChild(sayBtn(st.say,'say sm')); sb.appendChild(hd);
+    const body=h('div'); sb.appendChild(body); const check=st.render(body);
+    const fb=h('div',{class:'fb'}); const btn=h('button',{class:'btn btn-sm btn-green',type:'button'},'Vérifier'); const row=h('div',{class:'row',style:'margin-top:10px'}); row.appendChild(btn); sb.appendChild(row); sb.appendChild(fb);
+    let tries=0;
+    btn.onclick=()=>{ const r=check(); tries++; fb.className='fb show '+(r.ok?'good':'bad'); fb.textContent=r.ok?'✔ Étape réussie !':'✘ '+(r.msg||'Ce n’est pas encore ça.');
+      if(r.ok){ if(tries<=2) st.crit.forEach(c=>ctx.crit.add(c)); if(r.trace) ctx.traces.push(r.trace); btn.remove(); sb.classList.add('done'); sb.querySelectorAll('input,select,textarea,.tile,.carton,.zone,.chipc,.spot').forEach(x=>{ x.disabled=true; x.onclick=null; x.style.pointerEvents='none'; }); i++; next(); setTimeout(()=>{ const n=box.lastElementChild; if(n) n.scrollIntoView({behavior:'smooth',block:'nearest'}); },50); } };
+    box.appendChild(sb);
+  };
+  next();
+}
+
+function terrainBadge(st,T){ return st?`✅ Étape terrain validée le ${st.date} ${st.mode==='simulation'?'· 🖥 sur l’ordinateur':'· 🧰 sur le plateau technique'} (${st.crit.length} / ${T.crit.length} critères).`:''; }
 function renderTerrain(m){
   const T=TERRAIN[m.id]; const st=S.terrain[m.id];
   const e=h('div',{class:'terrain',id:'terrainCard'});
-  e.innerHTML=`<h3><span style="font-size:1.6rem">${T.icon}</span> Étape terrain · plateau technique <span class="mode">${T.mode}</span></h3>
-   <p style="margin:0 0 4px"><b>${T.task}</b></p><p style="margin:0;color:var(--muted);font-size:.92rem">Fais cette étape pour de vrai, puis appelle ton enseignante : elle coche ce que tu as réussi et valide avec son code.</p>
-   <ul>${T.crit.map((c,i)=>`<li><label><input type="checkbox" data-c="${i}" ${st&&st.crit&&st.crit.includes(i)?'checked':''} ${st?'disabled':''}> <span>${c}</span></label></li>`).join('')}</ul>
-   <div class="tz"></div>`;
-  e.querySelector('h3').appendChild(sayBtn(()=>`Étape terrain, ${T.mode}. ${T.task} Ce que ton enseignante va vérifier : ${T.crit.join('. ')}.`,'say sm'));
-  const tz=e.querySelector('.tz');
-  if(st){ tz.innerHTML=`<div class="ok-badge">✅ Étape terrain validée par l’enseignante le ${st.date} (${st.crit.length} / ${T.crit.length} critères).</div>`; }
-  else {
-    tz.innerHTML=`<div class="row"><input type="password" placeholder="Code enseignante" style="max-width:200px" class="tcode" autocomplete="off"><button class="btn btn-sm btn-green tval">Valider l’étape terrain</button><span class="tmsg" style="font-weight:800"></span></div>`;
-    tz.querySelector('.tval').onclick=()=>{
-      const msg=tz.querySelector('.tmsg');
-      if(tz.querySelector('.tcode').value.trim().toUpperCase()!==TERRAIN_CODE){ msg.textContent='Code incorrect.'; msg.style.color='var(--red)'; return; }
-      const crit=[...e.querySelectorAll('[data-c]')].filter(x=>x.checked).map(x=>Number(x.dataset.c));
-      if(!crit.length){ msg.textContent='Coche au moins un critère réussi.'; msg.style.color='var(--red)'; return; }
-      S.terrain[m.id]={ok:true,date:new Date().toLocaleDateString('fr-FR'),crit}; save(); burst();
-      e.replaceWith(renderTerrain(m));
-    };
-  }
+  e.innerHTML=`<h3><span style="font-size:1.6rem">${T.icon}</span> Étape terrain <span class="mode">${T.mode}</span></h3><div class="tstat"></div><div class="seg tmodes"></div><div class="tpane"></div>`;
+  const stat=e.querySelector('.tstat'); const updStat=()=>{ const x=S.terrain[m.id]; stat.innerHTML=x?`<div class="ok-badge">${terrainBadge(x,T)}</div>`:''; };
+  updStat();
+  const modes = TERRAIN_MODE==='simulation'?['sim'] : TERRAIN_MODE==='plateau'?['plateau'] : ['sim','plateau'];
+  const seg=e.querySelector('.tmodes'), pane=e.querySelector('.tpane');
+  let cur = (st&&st.mode!=='simulation'&&modes.includes('plateau'))?'plateau':modes[0];
+  const show=()=>{
+    seg.innerHTML=''; if(modes.length>1) modes.forEach(md=>{ const b=h('button',{type:'button',class:md===cur?'on':''},md==='sim'?'🖥 Sur l’ordinateur':'🧰 Sur le plateau technique'); b.onclick=()=>{ cur=md; show(); }; seg.appendChild(b); });
+    pane.innerHTML='';
+    if(cur==='sim'){
+      const sd=S.sim&&S.sim[m.id];
+      pane.innerHTML=`<p style="margin:0 0 4px"><b>${SIM_TASK[m.id]}</b></p><p class="mini" style="margin:0">Fais l’activité étape par étape. Clique sur 🔊 pour écouter une consigne.${sd?` · Déjà faite le ${sd.date} (${sd.crit.length} / ${T.crit.length} critères).`:''}</p>`;
+      const ttl=pane.querySelector('b'); ttl.parentNode.prepend(sayBtn(()=>SIM_TASK[m.id],'say sm')); ttl.parentNode.style.cssText='display:flex;gap:8px;align-items:center;margin:0 0 4px';
+      const box=h('div'); const go=h('button',{class:'btn btn-sm btn-gold',type:'button',style:'margin-top:10px'},sd?'🔁 Refaire la simulation':'▶️ Commencer la simulation');
+      go.onclick=()=>{ go.remove(); runSim(m,box,()=>{ updStat(); }); };
+      pane.appendChild(go); pane.appendChild(box);
+    } else {
+      const ps=st&&st.mode!=='simulation'?st:null;
+      pane.innerHTML=`<p style="margin:0 0 4px"><b>${T.task}</b></p><p class="mini" style="margin:0">Fais cette étape pour de vrai, puis appelle ton enseignante : elle coche ce que tu as réussi et valide avec son code.</p>
+        <ul>${T.crit.map((c,i)=>`<li><label><input type="checkbox" data-c="${i}" ${ps&&ps.crit.includes(i)?'checked':''} ${ps?'disabled':''}> <span>${c}</span></label></li>`).join('')}</ul><div class="tz"></div>`;
+      const ttl=pane.querySelector('b'); ttl.parentNode.prepend(sayBtn(()=>`${T.task} Ce que ton enseignante va vérifier : ${T.crit.join('. ')}.`,'say sm')); ttl.parentNode.style.cssText='display:flex;gap:8px;align-items:center;margin:0 0 4px';
+      const tz=pane.querySelector('.tz');
+      if(!ps){
+        tz.innerHTML=`<div class="row"><input type="password" placeholder="Code enseignante" style="max-width:200px" class="tcode" autocomplete="off"><button class="btn btn-sm btn-green tval">Valider l’étape terrain</button><span class="tmsg" style="font-weight:800"></span></div>`;
+        tz.querySelector('.tval').onclick=()=>{
+          const msg=tz.querySelector('.tmsg');
+          if(tz.querySelector('.tcode').value.trim().toUpperCase()!==TERRAIN_CODE){ msg.textContent='Code incorrect.'; msg.style.color='var(--red)'; return; }
+          const crit=[...pane.querySelectorAll('[data-c]')].filter(x=>x.checked).map(x=>Number(x.dataset.c));
+          if(!crit.length){ msg.textContent='Coche au moins un critère réussi.'; msg.style.color='var(--red)'; return; }
+          S.terrain[m.id]={ok:true,mode:'plateau',date:new Date().toLocaleDateString('fr-FR'),crit}; save(); burst();
+          e.replaceWith(renderTerrain(m));
+        };
+      }
+    }
+  };
+  show();
+  e.querySelector('h3').appendChild(sayBtn(()=>`Étape terrain, ${T.mode}. `+(modes.includes('sim')?SIM_TASK[m.id]:T.task),'say sm'));
   return e;
 }
 
@@ -1442,7 +1773,7 @@ function selfmHtml(st){
 function esc(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function renderBilan(){
   const c=$('#bilanCard');
-  const rows=MISSIONS.map(m=>{ const d=S.missions[m.id]; const t=S.terrain[m.id]; return `<tr><td><b>${m.day}/12</b> · ${m.title}</td><td>${m.comps.join(', ')}</td><td>${d&&d.done?LEVELS[d.level].icon+' '+LEVELS[d.level].name:'—'}</td><td class="stars">${d&&d.done?starStr(d.stars):'—'}</td><td>${d&&d.done&&d.tries?d.tries:'—'}</td><td>${d&&d.done&&d.level==='etoile'?d.hints:'—'}</td><td>${t?'✅ '+t.crit.length+'/'+TERRAIN[m.id].crit.length+' ('+t.date+')':'—'}</td></tr>`; }).join('');
+  const rows=MISSIONS.map(m=>{ const d=S.missions[m.id]; const t=S.terrain[m.id]; return `<tr><td><b>${m.day}/12</b> · ${m.title}</td><td>${m.comps.join(', ')}</td><td>${d&&d.done?LEVELS[d.level].icon+' '+LEVELS[d.level].name:'—'}</td><td class="stars">${d&&d.done?starStr(d.stars):'—'}</td><td>${d&&d.done&&d.tries?d.tries:'—'}</td><td>${d&&d.done&&d.level==='etoile'?d.hints:'—'}</td><td>${t?(t.mode==='simulation'?'🖥 ':'🧰 ')+t.crit.length+'/'+TERRAIN[m.id].crit.length+' ('+t.date+')':'—'}</td></tr>`; }).join('');
   const texts=Object.values(S.texts||{}).filter(x=>x.a&&x.a.trim()).sort((a,b)=>a.m-b.m);
   const writings = texts.length ? texts.map(x=>{ const mm=MISSIONS.find(k=>k.id===x.m); return `<div class="writing"><b>Mission ${x.m} · ${mm.title}</b> <small style="color:var(--muted)">(${LEVELS[x.level].name}, ${x.date})</small><div style="margin-top:4px">${x.q}</div><div class="ans">${x.a.replace(/</g,'&lt;')}</div><small style="display:block;margin-top:6px">Validé par l’enseignante : ☐ oui ☐ à reprendre</small></div>`; }).join('') : '<p style="color:var(--muted)">Tes écrits apparaîtront ici quand tu feras une mission au niveau 🛷 Traîneau.</p>';
   const selfRows=COMPS.map(cp=>`<tr><td><span class="chip"><i class="dot ${PAST[cp.p][0]}"></i>${cp.code}</span> ${cp.label}<br><small style="color:var(--muted)">Niveau visé (SGF) : ${PAST[cp.p][1]}</small></td><td>${SELF.map((s,i)=>`<label><input type="radio" name="se-${cp.code}" value="${i}" ${S.self[cp.code]==i?'checked':''}> ${s}</label>`).join('')}</td></tr>`).join('');
@@ -1513,9 +1844,12 @@ function renderProf(){
     <li>L’élève peut changer de niveau à chaque mission et rejouer une mission réussie à un niveau supérieur : les étoiles valorisent la prise de risque.</li>
   </ul>
   <h3>Étapes terrain (plateau technique)</h3>
-  <p>Chaque mission se termine par une étape à réaliser pour de vrai. Vous cochez les critères réussis sur le poste de l’élève et vous validez avec le code <b>${TERRAIN_CODE}</b>. Les étapes 4 (équipe de 3) et 5 (binôme) sont collectives.</p>
+  <p>Chaque mission se termine par une étape terrain, à faire de deux façons au choix :</p>
+  <ul><li><b>🖥 Sur l’ordinateur :</b> une simulation interactive avec des produits d’épicerie fine (café, céréales, biscuits, thé, conserves, chocolat). L’élève compte des produits, range des cartons, prélève une commande, repère des risques, fait un inventaire en deux comptages, remplit un bon de commande. Chaque critère compte comme réussi s’il est obtenu au 1ᵉʳ ou au 2ᵉ essai. Les données varient d’un élève à l’autre (anomalie, commande, écarts), ce qui évite de copier sur le voisin.</li>
+  <li><b>🧰 Sur le plateau technique :</b> vous cochez les critères sur le poste de l’élève et validez avec le code <b>${TERRAIN_CODE}</b>. Une validation sur le plateau prend le pas sur une simulation.</li></ul>
+  <p>Les étapes 4 (équipe de 3) et 5 (binôme) sont collectives dans les deux cas. Le geste professionnel (porter, ranger) ne peut être que simulé à l’écran : quand c’est possible, complétez par le plateau.</p>
   <ul>${MISSIONS.map(m=>`<li><b>M${m.id} · ${TERRAIN[m.id].mode} :</b> ${TERRAIN[m.id].task}</li>`).join('')}</ul>
-  <p style="font-size:.9rem;color:var(--muted)">Réglage : par défaut, le coffre s’ouvre dès que les 6 missions sont réussies. Pour exiger aussi les 6 étapes terrain, remplacez <code>REQUIRE_TERRAIN = false</code> par <code>true</code> dans le fichier. Les codes se modifient au même endroit (PROF_CODE, TERRAIN_CODE).</p>
+  <p style="font-size:.9rem;color:var(--muted)">Réglages : <code>TERRAIN_MODE = 'both'</code> propose les deux façons ; mettez <code>'simulation'</code> ou <code>'plateau'</code> pour n’en garder qu’une. Par défaut, le coffre s’ouvre dès que les 6 missions sont réussies. Pour exiger aussi les 6 étapes terrain, remplacez <code>REQUIRE_TERRAIN = false</code> par <code>true</code> dans le fichier. Les codes se modifient au même endroit (PROF_CODE, TERRAIN_CODE).</p>
   <h3>Contre les réponses au hasard</h3>
   <ul><li>Le nombre d’essais de chaque mission apparaît dans le bilan.</li><li>Au 2ᵉ essai raté (niveaux Flocon et Étoile), les coups de pouce s’ouvrent.</li><li>À partir du ${PAUSE_AFTER}ᵉ essai raté, une pause réflexion de ${PAUSE_SECONDS} s bloque la validation.</li><li>Les écrits du niveau Traîneau doivent contenir au moins 6 mots différents ; ils sont conservés et imprimés dans le bilan pour votre validation.</li></ul>
   <h3>Profils et sauvegardes</h3>
@@ -1573,9 +1907,9 @@ function renderDash(){
   </div>
   <p style="font-size:.88rem;color:var(--muted)">Récupérer les résultats : sur un ordinateur partagé, les élèves qui y ont travaillé apparaissent seuls. Sinon, chaque élève clique sur « 💾 Télécharger ma sauvegarde » (page d’accueil) et vous dépose le fichier (ENT, clé USB) ; importez-les ici, plusieurs à la fois.</p>
   ${list.length?`<div class="tablewrap dash"><table><thead><tr><th>Élève</th>${MISSIONS.map(m=>`<th>M${m.id}</th>`).join('')}${COMPS.map(c=>`<th>${c.code}</th>`).join('')}<th></th></tr></thead><tbody>
-  ${list.map((st,i)=>`<tr><td><b>${esc(st.name)}</b><br><small style="color:var(--muted)">${esc(st.team||'')}</small></td>${MISSIONS.map(m=>{ const d=st.missions[m.id]; return `<td style="white-space:nowrap">${d&&d.done?LEVELS[d.level].icon+(st.terrain&&st.terrain[m.id]?' 🧰':'')+(selfDone(st,m.id)?' 🪞':''):'<span style="color:#b9b2a2">—</span>'}</td>`; }).join('')}${COMPS.map(c=>`<td>${posChip(compGlobal(st,c.code))}</td>`).join('')}<td><button class="btn btn-sm btn-green" data-fiche="${i}">Fiche CPro</button></td></tr>`).join('')}
+  ${list.map((st,i)=>`<tr><td><b>${esc(st.name)}</b><br><small style="color:var(--muted)">${esc(st.team||'')}</small></td>${MISSIONS.map(m=>{ const d=st.missions[m.id]; return `<td style="white-space:nowrap">${d&&d.done?LEVELS[d.level].icon+(st.terrain&&st.terrain[m.id]?(st.terrain[m.id].mode==='simulation'?' 🖥':' 🧰'):'')+(selfDone(st,m.id)?' 🪞':''):'<span style="color:#b9b2a2">—</span>'}</td>`; }).join('')}${COMPS.map(c=>`<td>${posChip(compGlobal(st,c.code))}</td>`).join('')}<td><button class="btn btn-sm btn-green" data-fiche="${i}">Fiche CPro</button></td></tr>`).join('')}
   </tbody></table></div>
-  <p style="font-size:.85rem;color:var(--muted)">❄️ ⭐ 🛷 niveau réussi · 🧰 étape terrain validée · 🪞 auto-évaluation faite. Les positionnements par compétence sont la moyenne des missions concernées (vos corrections comprises).</p>
+  <p style="font-size:.85rem;color:var(--muted)">❄️ ⭐ 🛷 niveau réussi · 🧰 terrain validé sur le plateau · 🖥 terrain fait sur l’ordinateur · 🪞 auto-évaluation faite. Les positionnements par compétence sont la moyenne des missions concernées (vos corrections comprises).</p>
   <details><summary>Comment est calculé le positionnement proposé ?</summary><ul style="font-size:.92rem">
    <li>Mission réussie au niveau Flocon → <b>Partiellement maîtrisé</b> ; Étoile → <b>Maîtrisé</b> ; Traîneau → <b>Bien maîtrisé</b>.</li>
    <li>Un cran de moins si la mission a demandé ${PAUSE_AFTER} essais ou plus, ou si moins de la moitié des critères terrain sont réussis.</li>
@@ -1605,7 +1939,7 @@ function ficheHTML(st, editable){
     return `<div class="mbox"><b style="font-family:Fraunces,serif;font-size:1.1rem">Mission ${m.id} · ${m.title}</b> <span class="mini">(${m.day} décembre)</span>
       <p class="mini" style="margin:.3em 0">${d&&d.done?`Réussie le ${d.date||'—'} · niveau ${LEVELS[d.level].icon} ${LEVELS[d.level].name} · ${starStr(d.stars)} · ${d.tries||'?'} essai(s)${d.level==='etoile'?' · '+(d.hints||0)+' coup(s) de pouce':''}`:'<b style="color:var(--red)">Mission non réussie</b>'}</p>
       <div class="grid2" style="gap:12px">
-        <div><b>🧰 Étape terrain</b> <span class="mini">${TERRAIN[m.id].mode}${t?' · validée le '+t.date:' · non validée'}</span><ul style="margin:.3em 0;padding-left:18px;font-size:.9rem">${TERRAIN[m.id].crit.map((c,i)=>`<li class="${t&&t.crit.includes(i)?'crit-ok':'crit-no'}">${t&&t.crit.includes(i)?'✔':'○'} ${c}</li>`).join('')}</ul></div>
+        <div><b>🧰 Étape terrain</b> <span class="mini">${TERRAIN[m.id].mode}${t?' · validée le '+t.date+(t.mode==='simulation'?' · 🖥 simulation sur ordinateur':' · 🧰 plateau technique'):' · non validée'}</span><ul style="margin:.3em 0;padding-left:18px;font-size:.9rem">${TERRAIN[m.id].crit.map((c,i)=>`<li class="${t&&t.crit.includes(i)?'crit-ok':'crit-no'}">${t&&t.crit.includes(i)?'✔':'○'} ${c}</li>`).join('')}</ul></div>
         <div><b>🪞 Auto-évaluation</b><ul style="margin:.3em 0;padding-left:18px;font-size:.9rem">${MEVAL[m.id].map((x,i)=>`<li>${x.t} → <b>${rec&&rec.r&&rec.r[i]!=null?RATES3[rec.r[i]][0]+' '+RATES3[rec.r[i]][1]:'—'}</b></li>`).join('')}</ul>${rec&&rec.diff?`<p class="mini">Difficulté exprimée : « ${esc(rec.diff)} »</p>`:''}</div>
       </div>
       ${txts.length?`<b>✍️ Écrits professionnels</b>${txts.map(x=>`<div class="writing"><div class="mini">${esc(x.q)}</div><div class="ans">${esc(x.a)}</div></div>`).join('')}`:''}
@@ -1643,7 +1977,7 @@ function exportCSV(list){
     MISSIONS.forEach(m=>{ const d=st.missions[m.id]; const t=st.terrain&&st.terrain[m.id]; const rec=st.selfm&&st.selfm[m.id];
       const txt=Object.values(st.texts||{}).filter(x=>x.m===m.id&&x.a).map(x=>x.a.trim()).join(' | ');
       mComps(m.id).forEach(c=>{ const cp=COMPS.find(x=>x.code===c); const pr=propose(st,m.id); const tv=pe.pos&&pe.pos[m.id+'|'+c];
-        rows.push([st.name,st.team||'','M'+m.id,m.title,c,cp.label,PAST[cp.p][1],d&&d.done?'oui':'non',d&&d.date||'',d&&d.done?LEVELS[d.level].name:'',d&&d.done?d.stars:'',d&&d.done?(d.tries||''):'',d&&d.done&&d.level==='etoile'?(d.hints||0):'',t?'oui':'non',t?t.crit.length+'/'+TERRAIN[m.id].crit.length:'',t?TERRAIN[m.id].crit.map((x,i)=>(t.crit.includes(i)?'[OK] ':'[--] ')+x).join(' / '):'',
+        rows.push([st.name,st.team||'','M'+m.id,m.title,c,cp.label,PAST[cp.p][1],d&&d.done?'oui':'non',d&&d.date||'',d&&d.done?LEVELS[d.level].name:'',d&&d.done?d.stars:'',d&&d.done?(d.tries||''):'',d&&d.done&&d.level==='etoile'?(d.hints||0):'',t?(t.mode==='simulation'?'oui (simulation ordinateur)':'oui (plateau technique)'):'non',t?t.crit.length+'/'+TERRAIN[m.id].crit.length:'',t?TERRAIN[m.id].crit.map((x,i)=>(t.crit.includes(i)?'[OK] ':'[--] ')+x).join(' / '):'',
           selfLabel(selfAvg(st,m.id,c)).replace(/^\S+\s/,''), MEVAL[m.id].map((x,i)=>x.c===c?x.t+' : '+(rec&&rec.r&&rec.r[i]!=null?RATES3[rec.r[i]][1]:'—'):null).filter(Boolean).join(' / '), rec&&rec.diff||'',
           POS[pr], tv!=null?POS[tv]:'', POS[finalPos(st,m.id,c)], (pe.com||{})[m.id]||'', (pe.cpro||{})[m.id]?'oui':'', txt]); }); });
     COMPS.forEach(c=>rows.push([st.name,st.team||'','SYNTHÈSE','',c.code,c.label,PAST[c.p][1],'','','','','','','','','','','','','','',POS[compGlobal(st,c.code)],'','','']));
